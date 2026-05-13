@@ -67,29 +67,42 @@ let state = {
 
 function initFirebase() {
   try {
-    const fb = window._firebase;
-    if (!fb) return;
+    console.log('initFirebase started');
 
-    if (!FIREBASE_CONFIG.apiKey || !FIREBASE_CONFIG.projectId) {
-      console.warn('[Spendly] Firebase config empty — running in local-only mode.');
+    const fb = window._firebase;
+    console.log('window._firebase =', fb);
+
+    if (!fb) {
+      console.log('Firebase SDK missing');
       return;
     }
 
-    const app  = fb.initializeApp(FIREBASE_CONFIG);
-     console.log('Firebase app initialized');
+    console.log('Firebase config =', FIREBASE_CONFIG);
+
+    const app = fb.initializeApp(FIREBASE_CONFIG);
+
+    console.log('Firebase app initialized');
+
     state.auth = fb.getAuth(app);
-    state.db   = fb.getFirestore(app);
+    state.db = fb.getFirestore(app);
+
+    console.log('Auth + Firestore created');
+
     state.firebaseReady = true;
-     console.log('Firebase ready');
+
+    console.log('Firebase READY TRUE');
 
     fb.onAuthStateChanged(state.auth, user => {
-      if (user) { onUserLoggedIn(user); }
-      else      { showAuthScreen(); }
+      console.log('Auth state changed', user);
+
+      if (user) onUserLoggedIn(user);
+      else showAuthScreen();
     });
+
   } catch (e) {
-  console.error('[Firebase Init Error]', e);
-  alert('Firebase Init Error: ' + e.message);
-}
+    console.error('FIREBASE INIT FAILED:', e);
+    alert(e.message);
+  }
 }
 
 /* =====================================================
