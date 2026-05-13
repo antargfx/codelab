@@ -73,7 +73,7 @@ fetch(`https://api.github.com/repos/${username}/${repo}/contents`)
 
           card.className = "card";
 
-          card.href = `/${item.name}`;
+          card.href = `/codelab/${item.name}`;
 
           card.innerHTML = `
             <h2>${item.name}</h2>
