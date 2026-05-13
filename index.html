@@ -31,7 +31,9 @@ h1{
   text-decoration:none;
   color:white;
   transition:.2s;
-  text-wrap: wrap;
+
+  overflow:hidden;
+  word-break:break-word;
 }
 
 .card:hover{
@@ -73,6 +75,8 @@ fetch(`https://api.github.com/repos/${username}/${repo}/contents`)
           const card = document.createElement("a");
 
           card.className = "card";
+          card.target = "_blank";
+          card.rel = "noopener noreferrer";
 
           card.href = `/codelab/${item.name}`;
 
