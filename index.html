@@ -1,9 +1,97 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>VCNCN</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VCNCN Projects</title>
+
+<style>
+body{
+  background:#0d1117;
+  color:white;
+  font-family:Arial,sans-serif;
+  padding:40px;
+}
+
+h1{
+  margin-bottom:30px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  gap:20px;
+}
+
+.card{
+  background:#161b22;
+  border:1px solid #30363d;
+  border-radius:16px;
+  padding:20px;
+  text-decoration:none;
+  color:white;
+  transition:.2s;
+}
+
+.card:hover{
+  border-color:#58a6ff;
+  transform:translateY(-3px);
+}
+</style>
 </head>
-<body style="background:#111;color:white;font-family:Arial;padding:40px;">
-  <h1>GitHub Pages Works</h1>
+<body>
+
+<h1>Projects</h1>
+
+<div class="grid" id="projects"></div>
+
+<script>
+const username = "antargfx";
+const repo = "codelab";
+
+fetch(`https://api.github.com/repos/${username}/${repo}/contents`)
+.then(res => res.json())
+.then(data => {
+
+  const container = document.getElementById("projects");
+
+  data.forEach(item => {
+
+    if(item.type === "dir"){
+
+      fetch(`https://api.github.com/repos/${username}/${repo}/contents/${item.name}`)
+      .then(r => r.json())
+      .then(folderData => {
+
+        const hasIndex = folderData.some(file =>
+          file.name.toLowerCase() === "index.html"
+        );
+
+        if(hasIndex){
+
+          const card = document.createElement("a");
+
+          card.className = "card";
+
+          card.href = `/${item.name}`;
+
+          card.innerHTML = `
+            <h2>${item.name}</h2>
+            <p>https://${username}.github.io/${item.name}</p>
+          `;
+
+          container.appendChild(card);
+
+        }
+
+      });
+
+    }
+
+  });
+
+});
+</script>
+
 </body>
 </html>
