@@ -76,17 +76,20 @@ function initFirebase() {
     }
 
     const app  = fb.initializeApp(FIREBASE_CONFIG);
+     console.log('Firebase app initialized');
     state.auth = fb.getAuth(app);
     state.db   = fb.getFirestore(app);
     state.firebaseReady = true;
+     console.log('Firebase ready');
 
     fb.onAuthStateChanged(state.auth, user => {
       if (user) { onUserLoggedIn(user); }
       else      { showAuthScreen(); }
     });
   } catch (e) {
-    console.error('[Firebase Init Error]', e);
-  }
+  console.error('[Firebase Init Error]', e);
+  alert('Firebase Init Error: ' + e.message);
+}
 }
 
 /* =====================================================
