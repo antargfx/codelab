@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MoneyBag Tracker</title>
+<link rel="stylesheet" href="style.css">
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+getAuth,
+onAuthStateChanged,
+signInWithEmailAndPassword,
+createUserWithEmailAndPassword,
+signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+import {
+getFirestore,
+collection,
+addDoc,
+getDocs
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+window.firebaseSDK = {
+initializeApp,
+getAuth,
+onAuthStateChanged,
+signInWithEmailAndPassword,
+createUserWithEmailAndPassword,
+signOut,
+getFirestore,
+collection,
+addDoc,
+getDocs
+};
+
+window.addEventListener("load",()=>{
+const s=document.createElement("script");
+s.src="app.js";
+document.body.appendChild(s);
+});
+</script>
+</head>
+
+<body>
+
+<div id="auth-screen" class="screen">
+<div class="card">
+<h1>ðŸ’° MoneyBag</h1>
+
+<input id="email" type="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+
+<button onclick="signup()">Create Account</button>
+<button onclick="login()">Login</button>
+
+<p class="small">Offline + Online Sync</p>
+</div>
+</div>
+
+<div id="app-screen" class="screen hidden">
+
+<div class="topbar">
+<h2>MoneyBag Tracker</h2>
+<button onclick="logout()">Logout</button>
+</div>
+
+<div class="balance-card">
+<h3>Current Money</h3>
+<div id="balance">à§³0</div>
+</div>
+
+<div class="card">
+<input id="title" placeholder="Reason">
+<input id="amount" type="number" placeholder="Amount">
+
+<select id="type">
+<option value="add">Add Money</option>
+<option value="cost">Spend Money</option>
+</select>
+
+<button onclick="addEntry()">Save Entry</button>
+</div>
+
+<div class="card">
+<h3>History</h3>
+<div id="history"></div>
+</div>
+
+</div>
+
+</body>
+</html>
