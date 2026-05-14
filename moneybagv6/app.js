@@ -1249,8 +1249,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (file.size > 1024 * 1024) {
-      showToast('Picture Upload Failed. Please Use A image smaller than 1MB');
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('Picture Upload Failed. \nPlease Use A image smaller than 1MB');
       e.target.value = '';
       return;
     }
