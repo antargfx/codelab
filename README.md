@@ -1,1 +1,2 @@
-# codelab
+# CodeLab
+# A practice for coding
