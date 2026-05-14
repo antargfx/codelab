@@ -57,7 +57,7 @@ const firebaseConfig = {
   appId: "1:555889482457:web:c2ce8e03694c38ce747cc8"
 };
 
-const IMGBB_API_KEY = window.IMGBB_API_KEY || localStorage.getItem('mb_imgbb_key') || 'YOUR_IMGBB_API_KEY';
+const IMGBB_API_KEY = window.IMGBB_API_KEY || localStorage.getItem('mb_imgbb_key') || 'e3d04bfe0caf2d378e1cce3d8d4407d6';
 
 let db = null, auth = null, fbAvailable = false;
 let profileUnsub = null;
