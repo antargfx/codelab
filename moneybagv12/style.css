@@ -957,6 +957,7 @@ a { color: inherit; text-decoration: none; }
 .bank-btn.withdraw{
   background:var(--yellow-soft);
   color:var(--yellow-dark);
+  border: 1px solid var(--purple);
 }
 
 .bank-btn:hover{
