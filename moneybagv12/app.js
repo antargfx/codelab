@@ -427,7 +427,7 @@ function openBankTransferModal(mode) {
 
   if (bankTransferMode === 'deposit') {
     title.textContent = 'Deposit to Bank';
-    subtitle.textContent = 'Move money from Moneybag into your bank savings.';
+    subtitle.textContent = 'Store money into your bank savings.';
     icon.className = 'fa-solid fa-building-columns';
     submitBtn.innerHTML = '<i class="fa-solid fa-arrow-right-arrow-left"></i> Deposit';
     helper.textContent = `Available in Moneybag: ${fmt(calcStats().balance)}`;
