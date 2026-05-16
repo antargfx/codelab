@@ -1293,37 +1293,45 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── Profile photo ──
   document.getElementById('btn-change-photo')?.addEventListener('click', () => {
     document.getElementById('photo-file-input').click();
-  });
-  document.getElementById('photo-file-input')?.addEventListener('change', async e => {
-    const file = e.target.files[0];
-    if (!file) return;
+  });document.getElementById('photo-file-input')?.addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-    if (file.size > MAX_IMAGE_BYTES) {
-      showToast('Picture Upload Failed. Please Use A image smaller than 10MB');
-      e.target.value = '';
-      return;
-    }
+  const avatarWrap = document.querySelector('.avatar-wrap');
 
-    if (!fbAvailable || !currentUser) {
-      showToast('Photo sync is unavailable');
-      e.target.value = '';
-      return;
-    }
+  if (file.size > MAX_IMAGE_BYTES) {
+    showToast('Picture Upload Failed. Please Use A image smaller than 10MB');
+    e.target.value = '';
+    return;
+  }
 
-    try {
-      const uploadedUrl = await uploadImageToImgBB(file);
-      userPhoto = uploadedUrl;
-      saveProfileLocal();
-      await saveProfileState();
-      updateProfileUI();
-      showToast('Photo updated!');
-    } catch (err) {
-      console.error('Photo upload failed:', err);
-      showToast('Picture Upload Failed. Please Use A image smaller than 10MB');
-    } finally {
-      e.target.value = '';
-    }
-  });
+  if (!fbAvailable || !currentUser) {
+    showToast('Photo sync is unavailable');
+    e.target.value = '';
+    return;
+  }
+
+  try {
+    avatarWrap?.classList.add('uploading');
+
+    const uploadedUrl = await uploadImageToImgBB(file);
+
+    userPhoto = uploadedUrl;
+
+    saveProfileLocal();
+    await saveProfileState();
+
+    updateProfileUI();
+
+    showToast('Photo updated!');
+  } catch (err) {
+    console.error('Photo upload failed:', err);
+    showToast('Picture Upload Failed. Please Use A image smaller than 10MB');
+  } finally {
+    avatarWrap?.classList.remove('uploading');
+    e.target.value = '';
+  }
+});
 
   // ── Online/Offline detection ──
   setOnlineStatus(navigator.onLine);
