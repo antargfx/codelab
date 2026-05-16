@@ -390,7 +390,7 @@ a { color: inherit; text-decoration: none; }
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 12px;
 }
-.section-header h3 { font-size: 18px; font-weight: 700; }
+.section-header h3 { font-size: 18px; font-weight: 700; margin-top: 10px; }
 .link-btn { font-size: 13px; color: var(--purple); font-weight: 600; }
 
 /* ─────────────────────────────────────────────
