@@ -605,6 +605,26 @@ a { color: inherit; text-decoration: none; }
   border: 1.5px solid var(--card-border);
 }
 .avatar-wrap { position: relative; flex-shrink: 0; }
+.avatar-wrap.uploading::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  border:3px solid rgba(255,255,255,.2);
+  border-top-color:var(--purple);
+  animation:avatarSpin .8s linear infinite;
+}
+
+.avatar-wrap.uploading img{
+  opacity:.45;
+  filter:blur(1px);
+}
+
+@keyframes avatarSpin{
+  to{
+    transform:rotate(360deg);
+  }
+}
 .avatar-edit {
   position: absolute; bottom: 0; right: 0;
   width: 26px; height: 26px; border-radius: 50%;
