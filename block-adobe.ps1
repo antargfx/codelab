@@ -1,169 +1,71 @@
 # =========================================================
-# Adobe Internet Blocker (Auto Detect Version)
-# Automatically detects Adobe installations on ALL drives
-# Blocks all Adobe executables using Windows Firewall
+# Adobe Internet Blocker
 # =========================================================
 
-# =========================
-# ADMIN CHECK
-# =========================
-
-$isAdmin = ([Security.Principal.WindowsPrincipal]
-    [Security.Principal.WindowsIdentity]::GetCurrent()
-).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+# Admin check
+$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
 if (-not $isAdmin) {
-    Write-Host ""
-    Write-Host "ERROR: Run this script as Administrator." -ForegroundColor Red
-    Pause
+    Write-Host "Run PowerShell as Administrator." -ForegroundColor Red
+    pause
     exit
 }
 
-# =========================
-# SETTINGS
-# =========================
+Write-Host ""
+Write-Host "Adobe Internet Blocker" -ForegroundColor Cyan
+Write-Host ""
+
+$AdobePaths = @(
+    "C:\Program Files\Adobe",
+    "C:\Program Files\Common Files\Adobe",
+    "C:\Program Files (x86)\Adobe",
+    "C:\Program Files (x86)\Common Files\Adobe"
+)
 
 $RulePrefix = "AdobeBlock_"
 $BlockedCount = 0
-$ScannedEXE = 0
 
-Write-Host ""
-Write-Host "==============================================" -ForegroundColor Cyan
-Write-Host " Adobe Internet Blocker (Auto Detect)" -ForegroundColor Yellow
-Write-Host "==============================================" -ForegroundColor Cyan
-Write-Host ""
+foreach ($Path in $AdobePaths) {
 
-# =========================
-# GET ALL DRIVES
-# =========================
+    if (Test-Path $Path) {
 
-$Drives = Get-PSDrive -PSProvider FileSystem
+        Write-Host "Scanning $Path" -ForegroundColor Yellow
 
-# =========================
-# FIND ADOBE FOLDERS
-# =========================
+        Get-ChildItem -Path $Path -Recurse -Filter *.exe -ErrorAction SilentlyContinue | ForEach-Object {
 
-$AdobeFolders = @()
+            $ExePath = $_.FullName
+            $RuleName = "$RulePrefix$($_.BaseName)"
 
-foreach ($Drive in $Drives) {
+            $Exists = Get-NetFirewallRule -DisplayName $RuleName -ErrorAction SilentlyContinue
 
-    Write-Host "Scanning Drive: $($Drive.Root)" -ForegroundColor Green
+            if (-not $Exists) {
 
-    try {
+                try {
 
-        $Folders = Get-ChildItem `
-            -Path $Drive.Root `
-            -Directory `
-            -Recurse `
-            -ErrorAction SilentlyContinue | Where-Object {
+                    New-NetFirewallRule `
+                        -DisplayName $RuleName `
+                        -Direction Outbound `
+                        -Program $ExePath `
+                        -Action Block `
+                        -Profile Any | Out-Null
 
-                $_.FullName -match "Adobe"
-            }
+                    Write-Host "Blocked $($_.Name)" -ForegroundColor Green
+                    $BlockedCount++
 
-        $AdobeFolders += $Folders
+                } catch {
 
-    }
-    catch {
-        # Ignore inaccessible folders
-    }
-}
-
-# Remove duplicates
-$AdobeFolders = $AdobeFolders | Select-Object -Unique
-
-# =========================
-# NO ADOBE FOUND
-# =========================
-
-if ($AdobeFolders.Count -eq 0) {
-
-    Write-Host ""
-    Write-Host "No Adobe installation detected." -ForegroundColor Red
-    Write-Host ""
-
-    Pause
-    exit
-}
-
-# =========================
-# BLOCK EXECUTABLES
-# =========================
-
-foreach ($Folder in $AdobeFolders) {
-
-    Write-Host ""
-    Write-Host "Found Adobe Folder:" -ForegroundColor Cyan
-    Write-Host $Folder.FullName -ForegroundColor White
-
-    try {
-
-        Get-ChildItem `
-            -Path $Folder.FullName `
-            -Filter *.exe `
-            -Recurse `
-            -ErrorAction SilentlyContinue | ForEach-Object {
-
-                $ScannedEXE++
-
-                $ExePath = $_.FullName
-
-                # Safe firewall rule name
-                $SafeName = $_.BaseName -replace '[^a-zA-Z0-9]', '_'
-                $RuleName = "$RulePrefix$SafeName"
-
-                # Skip existing rules
-                $ExistingRule = Get-NetFirewallRule `
-                    -DisplayName $RuleName `
-                    -ErrorAction SilentlyContinue
-
-                if (-not $ExistingRule) {
-
-                    try {
-
-                        New-NetFirewallRule `
-                            -DisplayName $RuleName `
-                            -Direction Outbound `
-                            -Program $ExePath `
-                            -Action Block `
-                            -Profile Any | Out-Null
-
-                        Write-Host "BLOCKED: $($_.Name)" -ForegroundColor Yellow
-                        $BlockedCount++
-
-                    }
-                    catch {
-
-                        Write-Host "FAILED: $($_.Name)" -ForegroundColor Red
-
-                    }
-
-                }
-                else {
-
-                    Write-Host "Already Blocked: $($_.Name)" -ForegroundColor DarkGray
+                    Write-Host "Failed $($_.Name)" -ForegroundColor Red
 
                 }
 
             }
 
-    }
-    catch {
-        # Ignore inaccessible subfolders
+        }
+
     }
 
 }
 
-# =========================
-# FINISHED
-# =========================
-
 Write-Host ""
-Write-Host "==============================================" -ForegroundColor Cyan
-Write-Host " Scan Complete" -ForegroundColor Green
-Write-Host "==============================================" -ForegroundColor Cyan
-Write-Host ""
-Write-Host "Executables Scanned : $ScannedEXE" -ForegroundColor White
-Write-Host "Programs Blocked    : $BlockedCount" -ForegroundColor Yellow
-Write-Host ""
-
-Pause
+Write-Host "Done. Total blocked: $BlockedCount" -ForegroundColor Cyan
+pause
