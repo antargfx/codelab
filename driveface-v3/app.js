@@ -489,6 +489,13 @@ const App = (() => {
     D.faceRing.classList.add('has-face');
     D.faceMeta.textContent = filename ? `✓ ${filename}` : '✓ Face detected';
     updateSearchBtn();
+
+    // Auto-start search if a folder is already filled in.
+    // Small delay so the UI (face preview, toast) settles before
+    // the scan modal appears on top.
+    if (S.folderId && !S.scanning) {
+      setTimeout(() => startSearch(), 400);
+    }
   }
 
   /* ══════════════════════════════════════════════════════
