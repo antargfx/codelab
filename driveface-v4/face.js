@@ -112,7 +112,7 @@ async function getDescriptor(input) {
     // Ignore tiny / blurry background faces
     const validFaces = detections.filter(d => {
       const box = d.detection.box;
-      return box.width >= 90 && box.height >= 90;
+      return box.width >= 50 && box.height >= 50;
     });
 
     if (!validFaces.length) {
