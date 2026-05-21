@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find Your Photos</title>
+  <meta name="description" content="Find every photo of you from your event gallery. Upload a selfie and let AI find your photos instantly.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- ═══════════════════ HEADER ═══════════════════ -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="15" stroke="url(#hg)" stroke-width="1.5" opacity="0.4"/>
+            <circle cx="16" cy="13" r="4.5" fill="url(#hg)"/>
+            <path d="M7.5 27c0-4.694 3.806-8.5 8.5-8.5s8.5 3.806 8.5 8.5" stroke="url(#hg)" stroke-width="2" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="hg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#a78bfa"/><stop offset="1" stop-color="#38bdf8"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="logo-text" id="appNameHeader">DriveFace<em>Finder</em></span>
+      </div>
+      <nav class="header-nav">
+        <button id="historyBtn"  class="nav-btn" title="Scan History">
+          <i class="fa-solid fa-clock-rotate-left"></i><span>History</span>
+        </button>
+        <button id="settingsBtn" class="nav-btn" title="Settings">
+          <i class="fa-solid fa-sliders"></i><span>Settings</span>
+        </button>
+        <button id="themeBtn"    class="nav-btn theme-toggle" title="Toggle theme">
+          <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- ═══════════════════ HERO ═══════════════════ -->
+    <section class="hero">
+      <div class="hero-mesh"></div>
+      <div class="hero-particles" id="heroParticles"></div>
+      <div class="hero-inner">
+        <div class="hero-pill">
+          <span class="pill-dot"></span>
+          AI Face Recognition · No account needed
+        </div>
+        <h1 class="hero-headline">
+          Find every photo<br>
+          <span class="headline-accent" id="heroTagline">of you, instantly.</span>
+        </h1>
+        <p class="hero-sub">
+          Take a selfie or upload a photo of yourself.<br>
+          Our AI scans the gallery and shows only your photos.
+        </p>
+        <div class="hero-steps">
+          <div class="hero-step"><span class="hero-step-num">1</span><span>Enter event folder</span></div>
+          <i class="fa-solid fa-arrow-right" style="color:var(--txt-3);font-size:12px"></i>
+          <div class="hero-step"><span class="hero-step-num">2</span><span>Upload your selfie</span></div>
+          <i class="fa-solid fa-arrow-right" style="color:var(--txt-3);font-size:12px"></i>
+          <div class="hero-step"><span class="hero-step-num">3</span><span>Download your photos</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ SEARCH PANEL ═══════════════════ -->
+    <section class="panel-section">
+      <div class="panel-card" id="searchPanel">
+
+        <!-- Step 1: Folder -->
+        <div class="step-block">
+          <div class="step-header">
+            <span class="step-chip">01</span>
+            <div>
+              <h3 class="step-title" id="folderFieldLabel">Event Folder</h3>
+              <p class="step-hint">Paste the folder link or ID shared by your photographer</p>
+            </div>
+          </div>
+          <div class="field-wrap">
+            <i class="fa-brands fa-google-drive field-icon"></i>
+            <input
+              type="text"
+              id="folderInput"
+              class="field-input"
+              placeholder="Paste folder link or event ID…"
+              autocomplete="off"
+              spellcheck="false"
+            >
+            <button id="clearFolder" class="field-clear" aria-label="Clear">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+          <div id="recentSearches" class="recent-box hidden"></div>
+          <div id="folderStatus" class="folder-status hidden"></div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <!-- Step 2: Face -->
+        <div class="step-block">
+          <div class="step-header">
+            <span class="step-chip">02</span>
+            <div>
+              <h3 class="step-title">Your Selfie</h3>
+              <p class="step-hint">A clear, well-lit, front-facing photo of your face</p>
+            </div>
+          </div>
+
+          <div class="face-zone" id="dropZone">
+            <div class="face-preview-area">
+              <div class="face-ring" id="faceRing">
+                <div id="faceEmpty" class="face-empty">
+                  <i class="fa-solid fa-face-smile-beam"></i>
+                </div>
+                <img id="faceImg" class="face-photo hidden" alt="Your face">
+                <div id="faceCheck" class="face-check hidden"><i class="fa-solid fa-check"></i></div>
+              </div>
+              <div class="face-meta">
+                <p id="faceMeta" class="face-meta-text">No photo yet</p>
+                <p class="face-drop-hint"><i class="fa-regular fa-hand-pointer"></i> Or drag &amp; drop here</p>
+              </div>
+            </div>
+            <div class="face-btns">
+              <button id="uploadFaceBtn" class="btn btn-outline">
+                <i class="fa-solid fa-image"></i> Upload Photo
+              </button>
+              <button id="cameraBtn" class="btn btn-outline">
+                <i class="fa-solid fa-camera"></i> Take Selfie
+              </button>
+              <input type="file" id="faceFileInput" accept="image/*" class="hidden" aria-label="Upload photo">
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Threshold -->
+        <div class="step-divider"></div>
+        <div class="step-block">
+          <div class="step-header">
+            <span class="step-chip">03</span>
+            <div>
+              <h3 class="step-title">Similarity Threshold</h3>
+              <p class="step-hint">Lower = more results · Higher = stricter matching</p>
+            </div>
+          </div>
+          <div class="threshold-control">
+            <button id="thresholdMinus" class="btn btn-ghost btn-sm threshold-adj" aria-label="Decrease threshold">
+              <i class="fa-solid fa-minus"></i>
+            </button>
+            <div class="threshold-slider-wrap">
+              <input type="range" id="thresholdSlider" min="0.30" max="0.85" step="0.01" value="0.55" aria-label="Similarity threshold">
+              <div class="threshold-labels">
+                <span>More results</span>
+                <span id="thresholdValue" class="threshold-val">0.55</span>
+                <span>Stricter</span>
+              </div>
+            </div>
+            <button id="thresholdPlus" class="btn btn-ghost btn-sm threshold-adj" aria-label="Increase threshold">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="search-cta">
+          <button id="searchBtn" class="btn btn-primary btn-xl" disabled>
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>Find My Photos</span>
+          </button>
+          <p class="cta-note" id="ctaNote">Complete both steps above to start</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════ RESULTS ═══════════════════ -->
+    <section id="resultsSection" class="results-section hidden">
+      <div class="results-topbar">
+        <div class="results-title-group">
+          <h2 class="results-heading">Your Photos</h2>
+          <span id="resultCount" class="result-badge">0 found</span>
+        </div>
+        <div class="results-tools">
+          <div class="filter-group">
+            <label for="confidenceFilter" class="filter-label">Confidence</label>
+            <div class="range-wrap">
+              <input type="range" id="confidenceFilter" min="0" max="100" value="0" aria-label="Minimum confidence filter">
+              <span id="confidenceValue" class="range-val">All</span>
+            </div>
+          </div>
+          <div class="filter-group grid-size-group">
+            <label class="filter-label"><i class="fa-solid fa-grip"></i> Size</label>
+            <div class="range-wrap">
+              <input type="range" id="gridSizeSlider" min="140" max="420" value="200" step="20" aria-label="Grid card size">
+            </div>
+          </div>
+          <div class="results-actions">
+            <button id="exportLinksBtn" class="btn btn-ghost btn-sm">
+              <i class="fa-solid fa-link"></i> Export Links
+            </button>
+            <button id="downloadOneByOneBtn" class="btn btn-ghost btn-sm">
+              <i class="fa-solid fa-images"></i> Download One by One
+            </button>
+            <button id="downloadAllBtn" class="btn btn-primary btn-sm">
+              <i class="fa-solid fa-file-zipper"></i> Download ZIP
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="resultsGrid" class="results-grid"></div>
+
+      <div id="emptyState" class="empty-state hidden">
+        <div class="empty-icon"><i class="fa-solid fa-face-meh-blank"></i></div>
+        <h3>No matches found</h3>
+        <p>Try using a clearer front-facing photo, or ask the photographer to lower the matching threshold.</p>
+      </div>
+
+      <div id="loadMoreContainer" class="load-more hidden">
+        <button id="loadMoreBtn" class="btn btn-outline">
+          <i class="fa-solid fa-chevron-down"></i> Load More
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- ═══════════════════ CAMERA MODAL ═══════════════════ -->
+  <div id="cameraModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Take a selfie">
+    <div class="modal-backdrop" id="cameraBackdrop"></div>
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3><i class="fa-solid fa-camera"></i> Take a Selfie</h3>
+        <button id="closeCameraModal" class="icon-btn" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="cam-viewport">
+        <video id="cameraFeed" autoplay playsinline muted></video>
+        <div class="cam-reticle">
+          <div class="cam-corner tl"></div><div class="cam-corner tr"></div>
+          <div class="cam-corner bl"></div><div class="cam-corner br"></div>
+        </div>
+      </div>
+      <div class="modal-foot modal-foot-center">
+        <p class="cam-tip cam-tip-center"><i class="fa-solid fa-circle-info"></i> Center your face within the frame</p>
+        <button id="captureBtn" class="btn btn-primary btn-capture">
+          <i class="fa-solid fa-circle-dot"></i> Capture
+        </button>
+      </div>
+      <canvas id="cameraCanvas" class="hidden"></canvas>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ LIGHTBOX ═══════════════════ -->
+  <div id="lightbox" class="lightbox hidden" role="dialog" aria-modal="true" aria-label="Photo preview">
+    <div class="lb-backdrop" id="lbBackdrop"></div>
+    <button id="lbClose"    class="lb-close icon-btn"    aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    <button id="lbPrev"     class="lb-nav lb-prev icon-btn" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
+    <button id="lbNext"     class="lb-nav lb-next icon-btn" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
+    <div class="lb-stage">
+      <img id="lbImg" src="" alt="Full size" draggable="false">
+      <div class="lb-loader" id="lbLoader"><span class="spinner"></span></div>
+    </div>
+    <div class="lb-bar">
+      <div class="lb-info">
+        <span id="lbName"       class="lb-filename"></span>
+        <span id="lbConfidence" class="lb-score"></span>
+      </div>
+      <button id="lbDownload" class="btn btn-primary btn-sm">
+        <i class="fa-solid fa-download"></i> Download
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SETTINGS MODAL ═══════════════════ -->
+  <div id="settingsModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Settings">
+    <div class="modal-backdrop" id="settingsBackdrop"></div>
+    <div class="modal-box modal-box-sm">
+      <div class="modal-head">
+        <h3><i class="fa-solid fa-sliders"></i> Settings</h3>
+        <button id="closeSettings" class="icon-btn" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="settings-body">
+
+        <!-- Recognition -->
+        <div class="setting-section">
+          <h4 class="setting-section-title"><i class="fa-solid fa-brain"></i> Face Recognition</h4>
+          <div class="setting-row">
+            <label for="qualitySelect">Processing Quality</label>
+            <select id="qualitySelect" class="select-input">
+              <option value="fast">Fast — quick scan, less accurate</option>
+              <option value="balanced">Balanced — recommended</option>
+              <option value="accurate" selected>Accurate — slower, best for dark/blurry photos</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Limits -->
+        <div class="setting-section">
+          <h4 class="setting-section-title"><i class="fa-solid fa-gauge-high"></i> Limits</h4>
+          <div class="setting-row">
+            <label for="maxImagesSlider">Max Images Per Scan — <strong id="maxImagesValue">800</strong></label>
+            <input type="range" id="maxImagesSlider" min="50" max="2000" step="50" value="800">
+          </div>
+        </div>
+
+        <!-- Maintenance -->
+        <div class="setting-section">
+          <h4 class="setting-section-title"><i class="fa-solid fa-wrench"></i> Maintenance</h4>
+          <div class="setting-row setting-row-inline">
+            <button id="clearCacheBtn"   class="btn btn-ghost btn-sm"><i class="fa-solid fa-database"></i> Clear Face Cache</button>
+            <button id="clearHistoryBtn" class="btn btn-ghost btn-sm"><i class="fa-solid fa-trash-can"></i> Clear History</button>
+          </div>
+          <p class="setting-note" id="cacheInfo">Loading cache info…</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ HISTORY MODAL ═══════════════════ -->
+  <div id="historyModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Scan history">
+    <div class="modal-backdrop" id="historyBackdrop"></div>
+    <div class="modal-box modal-box-sm">
+      <div class="modal-head">
+        <h3><i class="fa-solid fa-clock-rotate-left"></i> Recent Scans</h3>
+        <button id="closeHistory" class="icon-btn" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="historyList" class="history-list">
+        <div class="empty-state-sm">
+          <i class="fa-solid fa-box-open"></i><p>No scans yet</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ MODEL LOADING ═══════════════════ -->
+  <div id="modelOverlay" class="model-overlay" role="status" aria-label="Loading AI models">
+    <div class="model-card">
+      <div class="model-icon">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="30" stroke="url(#mg)" stroke-width="1.5" opacity="0.25"/>
+          <circle cx="32" cy="24" r="9" fill="url(#mg)"/>
+          <path d="M14 54c0-9.941 8.059-18 18-18s18 8.059 18 18" stroke="url(#mg)" stroke-width="2.5" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="mg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#a78bfa"/><stop offset="1" stop-color="#38bdf8"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <h3>Loading AI Models</h3>
+      <p id="modelStatusText">Downloading face recognition models…</p>
+      <div class="model-pbar-track">
+        <div id="modelProgressBar" class="model-pbar-fill" style="width:0%"></div>
+      </div>
+      <p class="model-note">First visit only · ~10–30 seconds</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ FACE PROCESSING MODAL ═══════════════════ -->
+  <div id="faceProcessModal" class="fp-modal hidden" role="status" aria-label="Processing your photo">
+    <div class="fp-card">
+
+      <!-- Animated face detection graphic -->
+      <div class="fp-graphic">
+        <!-- The user's thumbnail preview (populated by JS) -->
+        <div class="fp-thumb-wrap">
+          <img id="fpThumb" class="fp-thumb" src="" alt="">
+          <!-- Overlay: tracing face outline + detection dots -->
+          <svg class="fp-overlay" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Face oval trace -->
+            <ellipse cx="60" cy="52" rx="28" ry="34"
+              stroke="url(#fpg)" stroke-width="1.5"
+              stroke-dasharray="200" stroke-dashoffset="200"
+              class="fp-trace-oval"/>
+            <!-- Eye dots -->
+            <circle cx="48" cy="46" r="2.5" fill="url(#fpg)" class="fp-dot fp-dot-1"/>
+            <circle cx="72" cy="46" r="2.5" fill="url(#fpg)" class="fp-dot fp-dot-2"/>
+            <!-- Nose dot -->
+            <circle cx="60" cy="57" r="2"   fill="url(#fpg)" class="fp-dot fp-dot-3"/>
+            <!-- Mouth arc -->
+            <path d="M50 66 Q60 73 70 66"
+              stroke="url(#fpg)" stroke-width="1.5" stroke-linecap="round"
+              stroke-dasharray="30" stroke-dashoffset="30"
+              class="fp-trace-mouth"/>
+            <!-- Corner brackets -->
+            <path d="M8 24 L8 8 L24 8"   stroke="url(#fpg)" stroke-width="1.5" stroke-linecap="round" class="fp-bracket"/>
+            <path d="M96 8 L112 8 L112 24" stroke="url(#fpg)" stroke-width="1.5" stroke-linecap="round" class="fp-bracket"/>
+            <path d="M8 96 L8 112 L24 112" stroke="url(#fpg)" stroke-width="1.5" stroke-linecap="round" class="fp-bracket"/>
+            <path d="M112 96 L112 112 L96 112" stroke="url(#fpg)" stroke-width="1.5" stroke-linecap="round" class="fp-bracket"/>
+            <defs>
+              <linearGradient id="fpg" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#a78bfa"/><stop offset="1" stop-color="#38bdf8"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+
+        <!-- Scanning beam across the thumbnail -->
+        <div class="fp-beam"></div>
+      </div>
+
+      <!-- Status text -->
+      <div class="fp-text">
+        <p class="fp-headline" id="fpHeadline">Analysing your photo…</p>
+        <p class="fp-sub" id="fpSub">Looking for a face</p>
+      </div>
+
+      <!-- Indeterminate progress dots -->
+      <div class="fp-dots">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SCANNING MODAL ═══════════════════ -->
+  <div id="scanModal" class="scan-modal hidden" role="status" aria-label="Scanning photos">
+    <div class="scan-modal-inner">
+
+      <!-- Animated face scanner -->
+      <div class="scan-face-wrap">
+        <div class="scan-ring scan-ring-1"></div>
+        <div class="scan-ring scan-ring-2"></div>
+        <div class="scan-ring scan-ring-3"></div>
+        <div class="scan-face-icon">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="32" cy="26" r="11" stroke="url(#sg)" stroke-width="2"/>
+            <path d="M12 58c0-11.046 8.954-20 20-20s20 8.954 20 20" stroke="url(#sg)" stroke-width="2" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="sg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#a78bfa"/><stop offset="1" stop-color="#38bdf8"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <!-- Scanning beam line -->
+        <div class="scan-beam"></div>
+        <!-- Corner brackets -->
+        <div class="scan-corner sc-tl"></div>
+        <div class="scan-corner sc-tr"></div>
+        <div class="scan-corner sc-bl"></div>
+        <div class="scan-corner sc-br"></div>
+      </div>
+
+      <!-- Status -->
+      <div class="scan-info">
+        <p id="progressLabel" class="scan-status-text">Initializing…</p>
+        <div class="scan-pbar-track">
+          <div id="progressBar" class="scan-pbar-fill" style="width:0%"></div>
+        </div>
+        <div class="scan-counts">
+          <span id="progressStats" class="scan-stat">0 / 0 images</span>
+          <span id="matchCount" class="scan-stat-match">0 matches</span>
+        </div>
+      </div>
+
+      <button id="cancelBtn" class="btn btn-ghost btn-sm scan-cancel">
+        <i class="fa-solid fa-stop"></i> Stop Scan
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ EXPORT LINKS MODAL ═══════════════════ -->
+  <div id="exportModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Export photo links">
+    <div class="modal-backdrop" id="exportBackdrop"></div>
+    <div class="modal-box modal-box-export">
+      <div class="modal-head">
+        <h3><i class="fa-solid fa-link"></i> Photo Links</h3>
+        <div class="export-head-actions">
+          <button id="exportCopyAllBtn" class="btn btn-ghost btn-sm">
+            <i class="fa-solid fa-copy"></i> Copy All
+          </button>
+          <button id="exportDownloadCsvBtn" class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-file-csv"></i> Download CSV
+          </button>
+          <button id="closeExportModal" class="icon-btn" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </div>
+      <div id="exportLinksList" class="export-links-list"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SCRIPTS ═══════════════════ -->
+  <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="config.js"></script>
+  <script src="utils.js"></script>
+  <script src="drive.js"></script>
+  <script src="face.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
