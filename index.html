@@ -6,7 +6,12 @@
 <title>Antar's Projects</title>
 
 <style>
+*{
+  box-sizing:border-box;
+}
+
 body{
+  margin:0;
   background:#0d1117;
   color:white;
   font-family:Arial,sans-serif;
@@ -31,7 +36,6 @@ h1{
   text-decoration:none;
   color:white;
   transition:.2s;
-
   overflow:hidden;
   word-break:break-word;
 }
@@ -39,6 +43,17 @@ h1{
 .card:hover{
   border-color:#58a6ff;
   transform:translateY(-3px);
+}
+
+.card h2{
+  margin-top:0;
+  margin-bottom:14px;
+}
+
+.card p{
+  margin:0;
+  opacity:.8;
+  line-height:1.4;
 }
 </style>
 </head>
@@ -52,25 +67,36 @@ h1{
 const username = "antargfx";
 const repo = "codelab";
 
-fetch(`https://api.github.com/repos/${username}/${repo}/contents`)
-.then(res => res.json())
-.then(data => {
+async function loadProjects(){
 
   const container = document.getElementById("projects");
 
-  data
-    .filter(item => item.type === "dir")
-    .sort((a, b) =>
-      a.name.localeCompare(b.name, undefined, {
-        numeric: true,
-        sensitivity: "base"
-      })
-    )
-    .forEach(item => {
+  try{
 
-      fetch(`https://api.github.com/repos/${username}/${repo}/contents/${item.name}`)
-      .then(r => r.json())
-      .then(folderData => {
+    const response = await fetch(
+      `https://api.github.com/repos/${username}/${repo}/contents`
+    );
+
+    const data = await response.json();
+
+    const folders = data
+      .filter(item => item.type === "dir")
+      .sort((a, b) =>
+        a.name.localeCompare(b.name, undefined, {
+          numeric: true,
+          sensitivity: "base"
+        })
+      );
+
+    for(const item of folders){
+
+      try{
+
+        const folderResponse = await fetch(
+          `https://api.github.com/repos/${username}/${repo}/contents/${item.name}`
+        );
+
+        const folderData = await folderResponse.json();
 
         const hasIndex = folderData.some(file =>
           file.name.toLowerCase() === "index.html"
@@ -78,28 +104,44 @@ fetch(`https://api.github.com/repos/${username}/${repo}/contents`)
 
         if(hasIndex){
 
+          const projectUrl =
+            `https://${username}.github.io/${repo}/${item.name}`;
+
           const card = document.createElement("a");
 
           card.className = "card";
           card.target = "_blank";
           card.rel = "noopener noreferrer";
-
-          card.href = `/codelab/${item.name}`;
+          card.href = projectUrl;
 
           card.innerHTML = `
             <h2>${item.name}</h2>
-            <p>https://${username}.github.io/codelab/${item.name}</p>
+            <p>${projectUrl}</p>
           `;
 
           container.appendChild(card);
 
         }
 
-      });
+      }catch(error){
+        console.error("Folder error:", item.name, error);
+      }
 
-    });
+    }
 
-});
+  }catch(error){
+
+    container.innerHTML = `
+      <p>Failed to load projects.</p>
+    `;
+
+    console.error(error);
+
+  }
+
+}
+
+loadProjects();
 </script>
 
 </body>
