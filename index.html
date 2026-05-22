@@ -61,7 +61,10 @@ fetch(`https://api.github.com/repos/${username}/${repo}/contents`)
   data
     .filter(item => item.type === "dir")
     .sort((a, b) =>
-      a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+      a.name.localeCompare(b.name, undefined, {
+        numeric: true,
+        sensitivity: "base"
+      })
     )
     .forEach(item => {
 
