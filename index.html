@@ -58,7 +58,10 @@ fetch(`https://api.github.com/repos/${username}/${repo}/contents`)
 
   const container = document.getElementById("projects");
 
-  data.forEach(item => {
+  data
+  .filter(item => item.type === "dir")
+  .sort((a, b) => a.name.localeCompare(b.name))
+  .forEach(item => {
 
     if(item.type === "dir"){
 
