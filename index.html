@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Antar's Projects</title>
+<style>
+body {
+  background: #0d1117;
+  color: white;
+  font-family: Arial, sans-serif;
+  padding: 40px;
+}
+h1 {
+  margin-bottom: 30px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+.card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 16px;
+  padding: 20px;
+  text-decoration: none;
+  color: white;
+  transition: .2s;
+  overflow: hidden;
+  word-break: break-word;
+}
+.card:hover {
+  border-color: #58a6ff;
+  transform: translateY(-3px);
+}
+#status {
+  margin-bottom: 20px;
+  color: #8b949e;
+  font-size: 14px;
+}
+#status.error { color: #f85149; }
+#status.ok    { color: #3fb950; }
+</style>
+</head>
+<body>
+<h1>Antar's Projects</h1>
+<div id="status">Loading projects…</div>
+<div class="grid" id="projects"></div>
+<script>
+const username  = "antargfx";
+const repo      = "codelab";
+const base      = `https://${username}.github.io/${repo}`;
+
+// ─── ADD YOUR PROJECTS HERE ──────────────────────────────────────────────────
+// For folders with index.html → just the folder name
+// For standalone .html files → include the .html extension
+const entries = [
+  "driveface-v1",
+  "driveface-v2",
+  "driveface-v3",
+  "driveface-v4",
+  // add more folders or files like "demo.html" here
+];
+// ─────────────────────────────────────────────────────────────────────────────
+
+const statusEl  = document.getElementById("status");
+const container = document.getElementById("projects");
+
+function naturalCompare(a, b) {
+  return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
+}
+function setStatus(msg, type = "") {
+  statusEl.textContent = msg;
+  statusEl.className = type;
+}
+
+async function probe(url) {
+  try {
+    const r = await fetch(url, { method: "HEAD" });
+    return r.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function loadProjects() {
+  setStatus("Probing GitHub Pages…");
+
+  const cards = [];
+
+  const checks = entries.map(async entry => {
+    const isFile = entry.toLowerCase().endsWith(".html");
+    const url    = isFile ? `${base}/${entry}` : `${base}/${entry}/`;
+    const live   = await probe(url);
+    if (live) {
+      const name = isFile ? entry.replace(/\.html$/i, "") : entry;
+      cards.push({ name, href: url, label: url });
+    }
+  });
+
+  await Promise.all(checks);
+
+  if (cards.length === 0) {
+    setStatus("No live projects found. Check that GitHub Pages is enabled and entries are correct.", "error");
+    return;
+  }
+
+  cards.sort((a, b) => naturalCompare(a.name, b.name));
+
+  cards.forEach(({ name, href, label }) => {
+    const card = document.createElement("a");
+    card.className = "card";
+    card.target = "_blank";
+    card.rel = "noopener noreferrer";
+    card.href = href;
+    card.innerHTML = `<h2>${name}</h2><p>${label}</p>`;
+    container.appendChild(card);
+  });
+
+  setStatus(`${cards.length} project${cards.length !== 1 ? "s" : ""} loaded.`, "ok");
+}
+
+loadProjects();
+</script>
+</body>
+</html>
