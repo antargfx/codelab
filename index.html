@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Antar's Projects</title>
+<style>
+body {
+  background: #0d1117;
+  color: white;
+  font-family: Arial, sans-serif;
+  padding: 40px;
+}
+h1 {
+  margin-bottom: 30px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+.card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 16px;
+  padding: 20px;
+  text-decoration: none;
+  color: white;
+  transition: .2s;
+  overflow: hidden;
+  word-break: break-word;
+}
+.card:hover {
+  border-color: #58a6ff;
+  transform: translateY(-3px);
+}
+#status {
+  margin-bottom: 20px;
+  color: #8b949e;
+  font-size: 14px;
+}
+#status.error { color: #f85149; }
+#status.ok    { color: #3fb950; }
+</style>
+</head>
+<body>
+<h1>Antar's Projects</h1>
+<div id="status">Loading projects…</div>
+<div class="grid" id="projects"></div>
+<script>
+const username  = "antargfx";
+const repo      = "codelab";
+const pagesBase = `https://${username}.github.io/${repo}`;
+const statusEl  = document.getElementById("status");
+const container = document.getElementById("projects");
+
+function naturalCompare(a, b) {
+  return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
+}
+function setStatus(msg, type = "") {
+  statusEl.textContent = msg;
+  statusEl.className = type;
+}
+
+// Probe a URL with a HEAD request — resolves true if 200, false otherwise
+async function exists(url) {
+  try {
+    const r = await fetch(url, { method: "HEAD" });
+    return r.ok;
+  } catch {
+    return false;
+  }
+}
+
+// Fetch the raw github.com repo page and extract folder/file names from the
+// file-list table that GitHub renders in its HTML.
+async function getRepoEntries() {
+  // Use the GitHub repo "tree" page — it lists all entries in plain HTML
+  const url = `https://github.com/${username}/${repo}`;
+
+  const res = await fetch(url, { headers: { Accept: "text/html" } });
+  if (!res.ok) throw new Error(`github.com returned HTTP ${res.status}`);
+  const html = await res.text();
+
+  // GitHub renders each row as:
+  //   <a ... href="/user/repo/tree/main/foldername">foldername</a>  (dirs)
+  //   <a ... href="/user/repo/blob/main/file.html">file.html</a>   (files)
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, "text/html");
+
+  const dirs  = new Set();
+  const files = new Set();
+
+  // GitHub's file table links all share /tree/ or /blob/ in their href
+  doc.querySelectorAll('a[href]').forEach(a => {
+    const href = a.getAttribute("href");
+
+    // folder: /antargfx/codelab/tree/main/FOLDERNAME
+    const folderMatch = href.match(
+      new RegExp(`^/${username}/${repo}/tree/[^/]+/([^/]+)$`)
+    );
+    if (folderMatch) {
+      dirs.add(folderMatch[1]);
+      return;
+    }
+
+    // file: /antargfx/codelab/blob/main/FILE.html
+    const fileMatch = href.match(
+      new RegExp(`^/${username}/${repo}/blob/[^/]+/([^/]+\\.html)$`, "i")
+    );
+    if (fileMatch) {
+      files.add(fileMatch[1]);
+    }
+  });
+
+  return { dirs: [...dirs], files: [...files] };
+}
+
+async function loadProjects() {
+  setStatus("Fetching repo file list from github.com…");
+
+  let dirs, files;
+  try {
+    ({ dirs, files } = await getRepoEntries());
+  } catch (e) {
+    setStatus(`Failed to read repo: ${e.message}`, "error");
+    return;
+  }
+
+  setStatus(`Found ${dirs.length} folders, ${files.length} HTML files. Probing GitHub Pages…`);
+
+  const cards = [];
+
+  // Direct .html files — probe GitHub Pages to confirm they're live
+  const fileProbes = files.map(async name => {
+    const url = `${pagesBase}/${name}`;
+    if (await exists(url)) {
+      const baseName = name.replace(/\.html$/i, "");
+      cards.push({ name: baseName, href: url, label: url });
+    }
+  });
+
+  // Folders — probe for index.html on GitHub Pages
+  const folderProbes = dirs.map(async name => {
+    const url = `${pagesBase}/${name}/`;
+    if (await exists(url)) {
+      cards.push({ name, href: url, label: url });
+    }
+  });
+
+  await Promise.all([...fileProbes, ...folderProbes]);
+
+  if (cards.length === 0) {
+    setStatus("No live projects found on GitHub Pages.", "error");
+    return;
+  }
+
+  cards.sort((a, b) => naturalCompare(a.name, b.name));
+
+  cards.forEach(({ name, href, label }) => {
+    const card = document.createElement("a");
+    card.className = "card";
+    card.target = "_blank";
+    card.rel = "noopener noreferrer";
+    card.href = href;
+    card.innerHTML = `<h2>${name}</h2><p>${label}</p>`;
+    container.appendChild(card);
+  });
+
+  setStatus(`${cards.length} project${cards.length !== 1 ? "s" : ""} loaded.`, "ok");
+}
+
+loadProjects();
+</script>
+</body>
+</html>
