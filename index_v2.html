@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Antar's Projects</title>
+<style>
+body{
+  background:#0d1117;
+  color:white;
+  font-family:Arial,sans-serif;
+  padding:40px;
+}
+h1{
+  margin-bottom:30px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  gap:20px;
+}
+.card{
+  background:#161b22;
+  border:1px solid #30363d;
+  border-radius:16px;
+  padding:20px;
+  text-decoration:none;
+  color:white;
+  transition:.2s;
+  overflow:hidden;
+  word-break:break-word;
+}
+.card:hover{
+  border-color:#58a6ff;
+  transform:translateY(-3px);
+}
+</style>
+</head>
+<body>
+<h1>Antar's Projects</h1>
+<div class="grid" id="projects"></div>
+<script>
+const username = "antargfx";
+const repo = "codelab";
+
+// Natural sort: handles "driveface-v12" > "driveface-v11" > "driveface-v2" correctly
+function naturalCompare(a, b) {
+  return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
+}
+
+fetch(`https://api.github.com/repos/${username}/${repo}/contents`)
+  .then(res => res.json())
+  .then(data => {
+    const container = document.getElementById("projects");
+
+    // Separate folders and direct .html files
+    const dirs = data.filter(item => item.type === "dir");
+    const htmlFiles = data.filter(item =>
+      item.type === "file" && item.name.toLowerCase().endsWith(".html")
+    );
+
+    // Collect all cards as { name, href, label } then sort and render
+    const cards = [];
+
+    // Promise for folder cards (only those containing index.html)
+    const folderPromises = dirs.map(item =>
+      fetch(`https://api.github.com/repos/${username}/${repo}/contents/${item.name}`)
+        .then(r => r.json())
+        .then(folderData => {
+          const hasIndex = folderData.some(file =>
+            file.name.toLowerCase() === "index.html"
+          );
+          if (hasIndex) {
+            cards.push({
+              name: item.name,
+              href: `/codelab/${item.name}`,
+              label: `https://${username}.github.io/codelab/${item.name}`
+            });
+          }
+        })
+    );
+
+    // Direct .html file cards (no fetch needed)
+    htmlFiles.forEach(item => {
+      const baseName = item.name.replace(/\.html$/i, "");
+      cards.push({
+        name: baseName,
+        href: `/codelab/${item.name}`,
+        label: `https://${username}.github.io/codelab/${item.name}`
+      });
+    });
+
+    // Wait for all folder checks, then sort and render
+    Promise.all(folderPromises).then(() => {
+      cards.sort((a, b) => naturalCompare(a.name, b.name));
+
+      cards.forEach(({ name, href, label }) => {
+        const card = document.createElement("a");
+        card.className = "card";
+        card.target = "_blank";
+        card.rel = "noopener noreferrer";
+        card.href = href;
+        card.innerHTML = `
+          <h2>${name}</h2>
+          <p>${label}</p>
+        `;
+        container.appendChild(card);
+      });
+    });
+  });
+</script>
+</body>
+</html>
