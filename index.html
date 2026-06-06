@@ -34,143 +34,128 @@ h1 {
   border-color: #58a6ff;
   transform: translateY(-3px);
 }
-#status {
-  margin-bottom: 20px;
-  color: #8b949e;
-  font-size: 14px;
-}
-#status.error { color: #f85149; }
-#status.ok    { color: #3fb950; }
 </style>
 </head>
 <body>
 <h1>Antar's Projects</h1>
-<div id="status">Loading projects…</div>
-<div class="grid" id="projects"></div>
-<script>
-const username  = "antargfx";
-const repo      = "codelab";
-const pagesBase = `https://${username}.github.io/${repo}`;
-const statusEl  = document.getElementById("status");
-const container = document.getElementById("projects");
-
-function naturalCompare(a, b) {
-  return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
-}
-function setStatus(msg, type = "") {
-  statusEl.textContent = msg;
-  statusEl.className = type;
-}
-
-// Probe a URL with a HEAD request — resolves true if 200, false otherwise
-async function exists(url) {
-  try {
-    const r = await fetch(url, { method: "HEAD" });
-    return r.ok;
-  } catch {
-    return false;
-  }
-}
-
-// Fetch the raw github.com repo page and extract folder/file names from the
-// file-list table that GitHub renders in its HTML.
-async function getRepoEntries() {
-  // Use the GitHub repo "tree" page — it lists all entries in plain HTML
-  const url = `https://github.com/${username}/${repo}`;
-
-  const res = await fetch(url, { headers: { Accept: "text/html" } });
-  if (!res.ok) throw new Error(`github.com returned HTTP ${res.status}`);
-  const html = await res.text();
-
-  // GitHub renders each row as:
-  //   <a ... href="/user/repo/tree/main/foldername">foldername</a>  (dirs)
-  //   <a ... href="/user/repo/blob/main/file.html">file.html</a>   (files)
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, "text/html");
-
-  const dirs  = new Set();
-  const files = new Set();
-
-  // GitHub's file table links all share /tree/ or /blob/ in their href
-  doc.querySelectorAll('a[href]').forEach(a => {
-    const href = a.getAttribute("href");
-
-    // folder: /antargfx/codelab/tree/main/FOLDERNAME
-    const folderMatch = href.match(
-      new RegExp(`^/${username}/${repo}/tree/[^/]+/([^/]+)$`)
-    );
-    if (folderMatch) {
-      dirs.add(folderMatch[1]);
-      return;
-    }
-
-    // file: /antargfx/codelab/blob/main/FILE.html
-    const fileMatch = href.match(
-      new RegExp(`^/${username}/${repo}/blob/[^/]+/([^/]+\\.html)$`, "i")
-    );
-    if (fileMatch) {
-      files.add(fileMatch[1]);
-    }
-  });
-
-  return { dirs: [...dirs], files: [...files] };
-}
-
-async function loadProjects() {
-  setStatus("Fetching repo file list from github.com…");
-
-  let dirs, files;
-  try {
-    ({ dirs, files } = await getRepoEntries());
-  } catch (e) {
-    setStatus(`Failed to read repo: ${e.message}`, "error");
-    return;
-  }
-
-  setStatus(`Found ${dirs.length} folders, ${files.length} HTML files. Probing GitHub Pages…`);
-
-  const cards = [];
-
-  // Direct .html files — probe GitHub Pages to confirm they're live
-  const fileProbes = files.map(async name => {
-    const url = `${pagesBase}/${name}`;
-    if (await exists(url)) {
-      const baseName = name.replace(/\.html$/i, "");
-      cards.push({ name: baseName, href: url, label: url });
-    }
-  });
-
-  // Folders — probe for index.html on GitHub Pages
-  const folderProbes = dirs.map(async name => {
-    const url = `${pagesBase}/${name}/`;
-    if (await exists(url)) {
-      cards.push({ name, href: url, label: url });
-    }
-  });
-
-  await Promise.all([...fileProbes, ...folderProbes]);
-
-  if (cards.length === 0) {
-    setStatus("No live projects found on GitHub Pages.", "error");
-    return;
-  }
-
-  cards.sort((a, b) => naturalCompare(a.name, b.name));
-
-  cards.forEach(({ name, href, label }) => {
-    const card = document.createElement("a");
-    card.className = "card";
-    card.target = "_blank";
-    card.rel = "noopener noreferrer";
-    card.href = href;
-    card.innerHTML = `<h2>${name}</h2><p>${label}</p>`;
-    container.appendChild(card);
-  });
-
-  setStatus(`${cards.length} project${cards.length !== 1 ? "s" : ""} loaded.`, "ok");
-}
-
-loadProjects();
-</script>
+<div class="grid">
+    <a class="card" href="https://antargfx.github.io/codelab/driveface-v1/" target="_blank" rel="noopener noreferrer">
+      <h2>driveface-v1</h2>
+      <p>https://antargfx.github.io/codelab/driveface-v1/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/driveface-v2/" target="_blank" rel="noopener noreferrer">
+      <h2>driveface-v2</h2>
+      <p>https://antargfx.github.io/codelab/driveface-v2/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/driveface-v3/" target="_blank" rel="noopener noreferrer">
+      <h2>driveface-v3</h2>
+      <p>https://antargfx.github.io/codelab/driveface-v3/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/driveface-v4/" target="_blank" rel="noopener noreferrer">
+      <h2>driveface-v4</h2>
+      <p>https://antargfx.github.io/codelab/driveface-v4/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/driveface-v5/" target="_blank" rel="noopener noreferrer">
+      <h2>driveface-v5</h2>
+      <p>https://antargfx.github.io/codelab/driveface-v5/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/driveface-v6/" target="_blank" rel="noopener noreferrer">
+      <h2>driveface-v6</h2>
+      <p>https://antargfx.github.io/codelab/driveface-v6/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/driveface-v7/" target="_blank" rel="noopener noreferrer">
+      <h2>driveface-v7</h2>
+      <p>https://antargfx.github.io/codelab/driveface-v7/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/driveface-v8/" target="_blank" rel="noopener noreferrer">
+      <h2>driveface-v8</h2>
+      <p>https://antargfx.github.io/codelab/driveface-v8/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/driveface-v9/" target="_blank" rel="noopener noreferrer">
+      <h2>driveface-v9</h2>
+      <p>https://antargfx.github.io/codelab/driveface-v9/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/index_old.html" target="_blank" rel="noopener noreferrer">
+      <h2>index_old</h2>
+      <p>https://antargfx.github.io/codelab/index_old.html</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/moneybagv2/" target="_blank" rel="noopener noreferrer">
+      <h2>moneybagv2</h2>
+      <p>https://antargfx.github.io/codelab/moneybagv2/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/moneybagv4/" target="_blank" rel="noopener noreferrer">
+      <h2>moneybagv4</h2>
+      <p>https://antargfx.github.io/codelab/moneybagv4/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/moneybagv5/" target="_blank" rel="noopener noreferrer">
+      <h2>moneybagv5</h2>
+      <p>https://antargfx.github.io/codelab/moneybagv5/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/moneybagv6/" target="_blank" rel="noopener noreferrer">
+      <h2>moneybagv6</h2>
+      <p>https://antargfx.github.io/codelab/moneybagv6/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/moneybagv7/" target="_blank" rel="noopener noreferrer">
+      <h2>moneybagv7</h2>
+      <p>https://antargfx.github.io/codelab/moneybagv7/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/moneybagv8/" target="_blank" rel="noopener noreferrer">
+      <h2>moneybagv8</h2>
+      <p>https://antargfx.github.io/codelab/moneybagv8/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/moneybagv9/" target="_blank" rel="noopener noreferrer">
+      <h2>moneybagv9</h2>
+      <p>https://antargfx.github.io/codelab/moneybagv9/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/moneybagv10/" target="_blank" rel="noopener noreferrer">
+      <h2>moneybagv10</h2>
+      <p>https://antargfx.github.io/codelab/moneybagv10/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/moneybagv11/" target="_blank" rel="noopener noreferrer">
+      <h2>moneybagv11</h2>
+      <p>https://antargfx.github.io/codelab/moneybagv11/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/moneybagv12/" target="_blank" rel="noopener noreferrer">
+      <h2>moneybagv12</h2>
+      <p>https://antargfx.github.io/codelab/moneybagv12/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/moneybagv13/" target="_blank" rel="noopener noreferrer">
+      <h2>moneybagv13</h2>
+      <p>https://antargfx.github.io/codelab/moneybagv13/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/moneybagv14/" target="_blank" rel="noopener noreferrer">
+      <h2>moneybagv14</h2>
+      <p>https://antargfx.github.io/codelab/moneybagv14/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/moneybagv15/" target="_blank" rel="noopener noreferrer">
+      <h2>moneybagv15</h2>
+      <p>https://antargfx.github.io/codelab/moneybagv15/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/moneybagv16/" target="_blank" rel="noopener noreferrer">
+      <h2>moneybagv16</h2>
+      <p>https://antargfx.github.io/codelab/moneybagv16/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/moneybagv17/" target="_blank" rel="noopener noreferrer">
+      <h2>moneybagv17</h2>
+      <p>https://antargfx.github.io/codelab/moneybagv17/</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/StockMeta AI V3.html" target="_blank" rel="noopener noreferrer">
+      <h2>StockMeta AI V3</h2>
+      <p>https://antargfx.github.io/codelab/StockMeta AI V3.html</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/StockMeta_AI_V6.html" target="_blank" rel="noopener noreferrer">
+      <h2>StockMeta_AI_V6</h2>
+      <p>https://antargfx.github.io/codelab/StockMeta_AI_V6.html</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/StockMeta_AI_V9.html" target="_blank" rel="noopener noreferrer">
+      <h2>StockMeta_AI_V9</h2>
+      <p>https://antargfx.github.io/codelab/StockMeta_AI_V9.html</p>
+    </a>
+    <a class="card" href="https://antargfx.github.io/codelab/trackv4/" target="_blank" rel="noopener noreferrer">
+      <h2>trackv4</h2>
+      <p>https://antargfx.github.io/codelab/trackv4/</p>
+    </a>
+</div>
+<!-- Auto-generated by generate-index.py — do not edit manually -->
 </body>
 </html>
