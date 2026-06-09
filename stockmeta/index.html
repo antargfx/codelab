@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StockMeta AI</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #fafafa; font-family: Inter, sans-serif; }
+    #loader {
+      position: fixed; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: #fafafa; z-index: 9999; gap: 16px;
+    }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid #e6e6e6;
+      border-top-color: #ff7033;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    p { color: #737373; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div id="loader">
+    <div class="spinner"></div>
+    <p>Loading StockMeta AI…</p>
+  </div>
+  <script>
+    fetch("https://stockmeta.antargfx.workers.dev/")
+      .then(res => {
+        if (!res.ok) throw new Error("Failed");
+        return res.text();
+      })
+      .then(html => {
+        document.open();
+        document.write(html);
+        document.close();
+      })
+      .catch(() => {
+        document.getElementById("loader").innerHTML =
+          '<p style="color:#e55f20">⚠️ Failed to load. Please refresh.</p>';
+      });
+  </script>
+</body>
+</html>
