@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Antfino - Moneybag Tracker</title>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#ff7033" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Antfino" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+</head>
+<body>
+
+<!-- ══════════════ AUTH SCREEN ══════════════ -->
+<div id="auth-screen" class="screen">
+  <div class="auth-bg">
+    <div class="auth-blob blob1"></div>
+    <div class="auth-blob blob2"></div>
+    <div class="auth-blob blob3"></div>
+  </div>
+  <div class="auth-container">
+    <div class="auth-logo">
+      <div class="logo-icon">
+<div style="width:180px;">
+
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 834.56 118.89"><defs><linearGradient id="a" x1="59.1" y1="-15.91" x2="119.72" y2="140.97" gradientUnits="userSpaceOnUse"><stop offset="0.27" stop-color="#fe7000"/><stop offset="0.29" stop-color="#fd6900"/><stop offset="0.37" stop-color="#f94900"/><stop offset="0.46" stop-color="#f62e00"/><stop offset="0.55" stop-color="#f31a00"/><stop offset="0.66" stop-color="#f10b00"/><stop offset="0.79" stop-color="#f00300"/><stop offset="1" stop-color="#f00000"/></linearGradient></defs><path d="M173.22,7.39c.11,0,.59,0,.76.28s.06.44-.14.8c-.85,1.6-1.68,3.2-2.54,4.79-1.23,2.27-2.4,4.58-3.73,6.8-3.95,6.63-9.87,10.24-17.47,11.23a51.83,51.83,0,0,1-6.47.32c-6.94,0-13.88,0-20.82-.06-9.07-.06-18.14,0-27.2.21-4.93.13-9.2,2.36-13,5.45a32.62,32.62,0,0,0-7.81,10.1C67,61.59,59.66,76.08,52.36,90.6q-6.3,12.53-12.64,25A7.85,7.85,0,0,1,32,120.41c-8.33-.11-16.65,0-25,0-1.35,0-1.47-.21-.86-1.41,7.16-14.07,14.24-28.19,21.51-42.21Q38.78,55.38,50.26,34.23c1.47-2.71,2.92-5.43,4.44-8.1C58.83,18.9,65,14,72.48,10.6c6.44-2.91,12-3.07,16-3.23C103.3,6.74,110.71,6.43,173.22,7.39Zm-65.37,66.5c-8.15,0-16.3-.11-24.45,0-4.93.09-9,2.14-11.53,6.58-1.68,3-3.21,6-4.78,9L51.73,119c-.6,1.14-.4,1.5,1,1.51,6.52,0,13,.09,19.56,0a12,12,0,0,0,11.3-7.11C86.19,108,89,102.65,91.66,97.25a6.26,6.26,0,0,1,6-3.66c2.3,0,4.6,0,6.91,0,4.42-.08,8.86.31,13.27-.21a11.94,11.94,0,0,0,9.46-6.08c2.18-3.85,4.14-7.82,6.18-11.75.77-1.46.65-1.64-1.05-1.64ZM135.51,62.1a12.86,12.86,0,0,0,11.81-7c1.19-2.13,2.32-4.3,3.47-6.46.83-1.56,1.63-3.14,2.46-4.7.41-.78.12-1.14-.69-1.19-.39,0-.78,0-1.17,0H140.87q-20.58,0-41.15,0c-5.22,0-9.41,1.75-11.94,6.58q-3,5.74-6,11.48c-.6,1.13-.5,1.31.8,1.34C82.7,62.1,126.8,62.16,135.51,62.1Z" transform="translate(-5.85 -4.23)" style="fill:url(#a)"/><path d="M251.67,120.51,247.94,109a32.52,32.52,0,0,0-10.88-7.63,33.78,33.78,0,0,0-26,0A32.52,32.52,0,0,0,200.19,109l-3.9,11.53H167.71L204.41,6.83h39.31l36.7,113.68ZM213.67,71h.16a2.52,2.52,0,0,0,.49-.08,1.93,1.93,0,0,1,.49-.08,63.59,63.59,0,0,1,9.26-.65A66.47,66.47,0,0,1,234.3,71a9.22,9.22,0,0,0,1.62.32h-.16a19.88,19.88,0,0,1,6.33,2.12,16.18,16.18,0,0,0-7.14-5L224.07,34.76,213,68.71a16.14,16.14,0,0,0-6,4.54A25.6,25.6,0,0,1,213.67,71Z" transform="translate(-5.85 -4.23)" style="fill:#f00000"/><path d="M317.61,53.44c-2.06-2.06-4-3.9-5.84-5.52a72.39,72.39,0,0,1,5.84,10.88v61.71H288.87V6.83h28.74V19q17.86,7.3,42.23,48.88A47.17,47.17,0,0,0,355,54.74V6.83h28.74V120.51H355q0-6.33-15.11-32.8T317.61,53.44Z" transform="translate(-5.85 -4.23)" style="fill:#f00000"/><path d="M479.7,35.57H450.79v84.94H422V35.57H393.13V6.83H479.7Z" transform="translate(-5.85 -4.23)" style="fill:#f00000"/><path d="M558.47,35.57H517.54V54.25A17.81,17.81,0,0,0,514.05,56a17.43,17.43,0,0,0-3.33,2.35c.1,0,1-.24,2.6-.73s2.95-.86,4-1.14a33.59,33.59,0,0,1,4.54-.73,58.57,58.57,0,0,1,6.09-.32,61.8,61.8,0,0,1,15.6,2.43V89.49Q537.35,84.3,527.28,84a26.49,26.49,0,0,0-9.74,1.46v35.08H489V6.83h69.52Z" transform="translate(-5.85 -4.23)" style="fill:#f00000"/><path d="M597.44,120.51H568.86V6.83h28.58Z" transform="translate(-5.85 -4.23)" style="fill:#f00000"/><path d="M643.41,53.44q-3.09-3.09-5.85-5.52a72.52,72.52,0,0,1,5.85,10.88v61.71H614.66V6.83h28.75V19q17.87,7.3,42.22,48.88a46.56,46.56,0,0,0-4.87-13.15V6.83h28.75V120.51H680.76q0-6.33-15.1-32.8T643.41,53.44Z" transform="translate(-5.85 -4.23)" style="fill:#f00000"/><path d="M758.07,8.86a58.95,58.95,0,0,1,45.8,0A60.66,60.66,0,0,1,823,21.69a58.17,58.17,0,0,1,12.83,19.08A59.55,59.55,0,0,1,804,118.57a59.36,59.36,0,0,1-65-12.83,61.38,61.38,0,0,1-12.83-19.09,59.26,59.26,0,0,1,0-45.88A58.4,58.4,0,0,1,758.07,8.86Zm44.66,33.05a30.7,30.7,0,0,0-52.46,21.76,30.78,30.78,0,0,0,61.56,0A29.71,29.71,0,0,0,802.73,41.91Z" transform="translate(-5.85 -4.23)" style="fill:#f00000"/></svg>
+</div>
+      </div>
+      <p>Your premium finance tracker</p>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login">Login</button>
+      <button class="auth-tab" data-tab="signup">Sign Up</button>
+    </div>
+
+    <!-- Login Form -->
+    <div id="login-form" class="auth-form active">
+      <div class="form-group">
+        <label><i class="fa-solid fa-envelope"></i> Email</label>
+        <input type="email" id="login-email" placeholder="your@email.com" autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label><i class="fa-solid fa-lock"></i> Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+      <button class="btn-primary" id="btn-login">
+        <i class="fa-solid fa-right-to-bracket"></i> Login
+      </button>
+    </div>
+
+    <!-- Signup Form -->
+    <div id="signup-form" class="auth-form">
+      <div class="form-group">
+        <label><i class="fa-solid fa-user"></i> Display Name</label>
+        <input type="text" id="signup-name" placeholder="Your Name" />
+      </div>
+      <div class="form-group">
+        <label><i class="fa-solid fa-envelope"></i> Email</label>
+        <input type="email" id="signup-email" placeholder="your@email.com" autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label><i class="fa-solid fa-lock"></i> Password</label>
+        <input type="password" id="signup-password" placeholder="Min 6 characters" autocomplete="new-password" />
+      </div>
+      <button class="btn-primary" id="btn-signup">
+        <i class="fa-solid fa-user-plus"></i> Create Account
+      </button>
+    </div>
+
+    <p id="auth-error" class="auth-error"></p>
+  </div>
+</div>
+
+<!-- ══════════════ MAIN APP ══════════════ -->
+<div id="app-screen" class="screen">
+
+  <!-- Status bar -->
+  <div id="status-bar">
+      <div class="page-header">
+        <div class="user-greeting">
+          <img id="dash-avatar" src="" alt="avatar" class="avatar-sm" />
+          <div>
+            <span class="greeting-sub"><i class="fa-solid fa-hand-wave"></i> Hello!</span>
+            <h2 id="dash-username">User</h2>
+          </div>
+        </div>
+      </div>
+    <span id="online-status" class="status-badge online">
+      <i class="fa-solid fa-wifi"></i> Online
+    </span>
+  </div>
+
+  <!-- Pages -->
+  <main id="page-container">
+
+    <!-- ── DASHBOARD ── -->
+    <section id="page-dashboard" class="page active">
+
+      <!-- Balance card -->
+      <div class="balance-card" id="balance-card" style="margin-top: 40px;">
+        <div class="balance-top">
+          <span class="balance-label">Total Balance</span>
+          <div class="balance-actions">
+            <span id="sync-status" class="status-badge sync-idle">
+              <i class="fa-solid fa-rotate"></i> Synced
+            </span>
+          </div>
+        </div>
+        <div class="balance-amount" id="dash-balance">$0.00</div>
+        <div class="balance-sub" id="dash-username-card">Antfino</div>
+        <div class="balance-fab" id="fab-main"><i class="fa-solid fa-plus"></i></div>
+      
+</div>
+
+      <!-- Bank Section (collapsible) -->
+      <div class="bank-collapse" id="bank-collapse">
+        <div class="bank-peek" id="bank-peek">
+          <i class="fa-solid fa-building-columns"></i>
+          <span class="bank-peek-label">Bank Savings</span>
+          <span class="bank-peek-amount" id="bank-balance-peek">$0.00</span>
+          <i class="fa-solid fa-chevron-down bank-peek-chevron"></i>
+        </div>
+        <div class="bank-card" id="bank-card">
+          <div class="bank-card-inner">
+            <div class="bank-top">
+              <div>
+                <span class="bank-label">Bank Savings</span>
+                <div class="bank-amount" id="bank-balance">$0.00</div>
+              </div>
+              <div class="bank-icon">
+                <i class="fa-solid fa-building-columns"></i>
+              </div>
+            </div>
+
+            <div class="bank-actions">
+              <button class="bank-btn deposit" id="btn-bank-deposit">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                Deposit
+              </button>
+
+              <button class="bank-btn withdraw" id="btn-bank-withdraw">
+                <i class="fa-solid fa-money-bill-transfer"></i>
+                Collect
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats row -->
+      <div class="stats-row">
+        <div class="stat-card income">
+          <div class="stat-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+          <div>
+            <span class="stat-label">Income</span>
+            <div class="stat-val" id="dash-total-added">$0</div>
+          </div>
+        </div>
+        <div class="stat-card expense">
+          <div class="stat-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
+          <div>
+            <span class="stat-label">Expense</span>
+            <div class="stat-val" id="dash-total-spent">$0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Savings plan -->
+      <div class="section-header">
+        <h3 class="section-title">My Savings Plan</h3>
+        <button class="link-btn" onclick="navigate('analytics')">View all</button>
+      </div>
+      <div class="savings-row">
+        <div class="savings-card">
+          <div class="savings-top">
+            <span>Prev. Month Cost</span>
+          </div>
+          <div class="savings-amount" id="dash-weekly-savings">$0</div>
+          <div class="progress-bar"><div class="progress-fill" id="pw-savings" style="width:0%"></div></div>
+        </div>
+        <div class="savings-card">
+          <div class="savings-top">
+            <span>This Week's Cost</span>
+          </div>
+          <div class="savings-amount" id="dash-monthly-savings">$0</div>
+          <div class="progress-bar"><div class="progress-fill monthly" id="pm-savings" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <!-- Recent transactions -->
+      <div class="section-header">
+        <h3 class="section-title">Recent Transactions</h3>
+        <button class="link-btn" onclick="navigate('records')">View all</button>
+      </div>
+      <div id="dash-recent-list" class="transaction-list">
+        <div class="empty-state">
+          <i class="fa-solid fa-inbox"></i>
+          <p>No transactions yet</p>
+        </div>
+      </div>
+
+      <!-- Insights -->
+      <div class="section-header"><h3 class="section-title">Financial Insights</h3></div>
+      <div id="insights-container" class="insights-list"></div>
+
+      <div style="height:100px"></div>
+    </section>
+
+    <!-- ── ANALYTICS ── -->
+    <section id="page-analytics" class="page">
+      <div class="page-header plain">
+        <h2 class="section-title">Budget Management</h2>
+      </div>
+
+      <!-- Donut -->
+      <div class="donut-card">
+        <canvas id="chart-donut" width="220" height="220"></canvas>
+        <div class="donut-center">
+          <span class="donut-label">Total Balance</span>
+          <span class="donut-val" id="analytics-balance">$0</span>
+        </div>
+      </div>
+
+      <!-- Category legend -->
+      <div id="category-legend" class="category-legend"></div>
+
+      <!-- Period tabs -->
+      <div class="period-tabs">
+        <button class="period-tab active" data-period="week">Week</button>
+        <button class="period-tab" data-period="month">Month</button>
+      </div>
+
+      <!-- Charts -->
+      <div class="chart-card">
+        <h4>Spending Trend</h4>
+        <canvas id="chart-bar" height="160"></canvas>
+      </div>
+      <div class="chart-card">
+        <h4>Savings vs Expenses</h4>
+        <canvas id="chart-line" height="160"></canvas>
+      </div>
+
+      <!-- Smart review -->
+      <div class="section-header"><h3 class="section-title">Smart Review</h3></div>
+      <div id="smart-review" class="smart-review"></div>
+
+      <div style="height:100px"></div>
+    </section>
+
+    <!-- ── RECORDS ── -->
+    <section id="page-records" class="page">
+      <div class="page-header plain">
+        <h2 class="section-title">Transactions</h2>
+        <button class="icon-btn" id="btn-export-mini"><i class="fa-solid fa-file-export"></i></button>
+      </div>
+
+      <!-- Search + filter -->
+      <div class="search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="search-input" placeholder="Search transactions..." />
+      </div>
+      <div class="filter-row">
+        <select id="filter-month">
+          <option value="">All Months</option>
+        </select>
+        <select id="filter-type">
+          <option value="">All Types</option>
+          <option value="add">Income</option>
+          <option value="spend">Expense</option>
+          <option value="bank">Bank Transfer</option>
+        </select>
+        <select id="filter-category">
+          <option value="">All Categories</option>
+        </select>
+        <input type="date" id="filter-date" />
+      </div>
+      <div id="month-summary" class="month-summary hidden"></div>
+
+      <div id="records-list" class="transaction-list"></div>
+      <div style="height:100px"></div>
+    </section>
+
+    <!-- ── SETTINGS ── -->
+    <section id="page-settings" class="page">
+      <div class="page-header plain">
+        <h2 class="section-title">Settings</h2>
+      </div>
+
+      <!-- Profile -->
+      <div class="settings-profile">
+        <div class="avatar-wrap">
+          <img id="settings-avatar" src="" alt="avatar" class="avatar-lg" />
+          <button class="avatar-edit" id="btn-change-photo"><i class="fa-solid fa-camera"></i></button>
+          <input type="file" id="photo-file-input" accept="image/*" style="display:none" />
+        </div>
+        <div class="profile-info">
+          <h3 id="settings-username">User</h3>
+          <p id="settings-email">email@example.com</p>
+        </div>
+      </div>
+
+      <!-- Settings cards -->
+      <div class="settings-list">
+        <div class="settings-item">
+          <div class="settings-icon yellow"><i class="fa-solid fa-coins"></i></div>
+          <div class="settings-text">
+            <span>Currency</span>
+            <select id="currency-select" class="inline-select">
+              <option value="৳">BDT (৳)</option>
+              <option value="$">USD ($)</option>
+              <option value="€">EUR (€)</option>
+              <option value="£">GBP (£)</option>
+              <option value="₹">INR (₹)</option>
+              <option value="¥">JPY (¥)</option>
+            </select>
+          </div>
+        </div>
+        <div class="settings-item" id="btn-theme-toggle">
+          <div class="settings-icon purple"><i class="fa-solid fa-moon" id="theme-icon"></i></div>
+          <div class="settings-text"><span>Dark Mode</span></div>
+          <div class="toggle-switch" id="theme-toggle-switch"></div>
+        </div>
+        <div class="settings-item" id="btn-export">
+          <div class="settings-icon green"><i class="fa-solid fa-file-arrow-down"></i></div>
+          <div class="settings-text"><span>Export CSV</span><small>Backup your data</small></div>
+          <i class="fa-solid fa-chevron-right"></i>
+        </div>
+        <div class="settings-item" id="btn-import-trigger">
+          <div class="settings-icon blue"><i class="fa-solid fa-file-arrow-up"></i></div>
+          <div class="settings-text"><span>Import CSV</span><small>Restore from backup</small></div>
+          <i class="fa-solid fa-chevron-right"></i>
+          <input type="file" id="csv-file-input" accept=".csv" style="display:none" />
+        </div>
+        <div class="settings-item" id="btn-clear-cache">
+          <div class="settings-icon red"><i class="fa-solid fa-trash-can"></i></div>
+          <div class="settings-text"><span>Clear Local Cache</span><small>Remove offline data</small></div>
+          <i class="fa-solid fa-chevron-right"></i>
+        </div>
+        <div class="settings-item sync-row">
+          <div class="settings-icon teal"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+          <div class="settings-text"><span>Sync Status</span><small id="sync-detail">Up to date</small></div>
+          <button class="btn-sync" id="btn-manual-sync"><i class="fa-solid fa-rotate"></i></button>
+        </div>
+        <div class="settings-item danger" id="btn-logout">
+          <div class="settings-icon red"><i class="fa-solid fa-right-from-bracket"></i></div>
+          <div class="settings-text"><span>Logout</span></div>
+          <i class="fa-solid fa-chevron-right"></i>
+        </div>
+      </div>
+
+      <div style="height:100px"></div>
+    </section>
+
+  </main><!-- /page-container -->
+
+  <!-- ══ BOTTOM NAV ══ -->
+  <nav id="bottom-nav">
+    <div class="nav-wrapper">
+      <button class="nav-btn active" data-page="dashboard">
+        <i class="fa-solid fa-house"></i>
+        <span>Home</span>
+      </button>
+      <button class="nav-btn" data-page="analytics">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Analytics</span>
+      </button>
+      <button class="nav-fab" id="fab-nav">
+        <i class="fa-solid fa-wallet"></i>
+      </button>
+      <button class="nav-btn" data-page="records">
+        <i class="fa-solid fa-list-ul"></i>
+        <span>Records</span>
+      </button>
+      <button class="nav-btn" data-page="settings">
+        <i class="fa-solid fa-gear"></i>
+        <span>Settings</span>
+      </button>
+    </div>
+  </nav>
+
+</div><!-- /app-screen -->
+
+<!-- ══════════ MODALS ══════════ -->
+
+<!-- Add/Edit Transaction Modal -->
+<div id="modal-transaction" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <h3 id="modal-title">Add Transaction</h3>
+      <button class="modal-close" data-modal="modal-transaction"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <!-- Type selector -->
+    <div class="type-selector">
+      <button class="type-btn active" data-type="add">
+        <i class="fa-solid fa-arrow-trend-up"></i> Income
+      </button>
+      <button class="type-btn" data-type="spend">
+        <i class="fa-solid fa-arrow-trend-down"></i> Expense
+      </button>
+    </div>
+
+    <input type="hidden" id="edit-record-id" />
+
+    <div class="form-group">
+      <label><i class="fa-solid fa-dollar-sign"></i> Amount</label>
+      <input type="text" id="txn-amount" placeholder="0.00 (e.g. 10+10+10)" inputmode="decimal" autocomplete="off" />
+      <small id="txn-amount-preview" class="amount-preview"></small>
+    </div>
+    <div class="form-group">
+      <label><i class="fa-solid fa-tag"></i> Title</label>
+      <input type="text" id="txn-title" placeholder="e.g. Grocery shopping" />
+    </div>
+    <div class="form-group">
+      <label><i class="fa-solid fa-folder"></i> Category</label>
+      <select id="txn-category">
+        <option value="Food">Food</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Rent">Rent</option>
+        <option value="Fuel">Fuel</option>
+        <option value="Health">Health</option>
+        <option value="Education">Education</option>
+        <option value="Entertainment">Entertainment</option>
+        <option value="Salary">Salary</option>
+        <option value="Freelance">Freelance</option>
+        <option value="Investment">Investment</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label><i class="fa-solid fa-calendar"></i> Date</label>
+      <input type="datetime-local" id="txn-date" />
+    </div>
+    <div class="form-group">
+      <label><i class="fa-solid fa-note-sticky"></i> Note (optional)</label>
+      <textarea id="txn-note" placeholder="Add a note..." rows="2"></textarea>
+    </div>
+
+    <button class="btn-primary" id="btn-save-txn">
+      <i class="fa-solid fa-floppy-disk"></i> Save Transaction
+    </button>
+  </div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div id="modal-confirm" class="modal-overlay">
+  <div class="modal-sheet small">
+    <div class="modal-handle"></div>
+    <div class="confirm-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+    <h3>Delete Transaction?</h3>
+    <p>This action cannot be undone.</p>
+    <div class="confirm-btns">
+      <button class="btn-ghost" data-modal="modal-confirm">Cancel</button>
+      <button class="btn-danger" id="btn-confirm-delete">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- CSV Import Preview Modal -->
+<div id="modal-import" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <h3>Import Preview</h3>
+      <button class="modal-close" data-modal="modal-import"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <p id="import-summary"></p>
+    <div id="import-preview" class="import-preview"></div>
+    <div class="confirm-btns">
+      <button class="btn-ghost" data-modal="modal-import">Cancel</button>
+      <button class="btn-primary" id="btn-confirm-import">
+        <i class="fa-solid fa-file-import"></i> Import
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Bank Transfer Modal -->
+<div id="modal-bank-transfer" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="bank-modal-head">
+        <div class="bank-modal-icon"><i id="bank-transfer-icon" class="fa-solid fa-building-columns"></i></div>
+        <div>
+          <h3 id="bank-transfer-title">Deposit to Bank</h3>
+          <p id="bank-transfer-subtitle" class="bank-modal-subtitle">Store money into your bank savings.</p>
+        </div>
+      </div>
+      <button class="modal-close" data-modal="modal-bank-transfer"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="bank-modal-summary" id="bank-transfer-helper">Available in Moneybag: $0.00</div>
+
+    <div class="form-group">
+      <label><i class="fa-solid fa-credit-card"></i> Amount</label>
+      <input type="number" id="bank-transfer-amount" placeholder="0.00" min="0" step="0.01" />
+    </div>
+
+    <div class="bank-modal-actions">
+      <button type="button" class="btn-ghost" id="btn-bank-transfer-max" style="display: none">Use Max</button>
+      <button type="button" class="btn-primary" id="btn-submit-bank-transfer">
+        <i class="fa-solid fa-arrow-right-arrow-left"></i> Deposit
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<!-- Loading overlay -->
+<div id="loading-overlay" class="loading-overlay">
+<div id="lottieDiv" style="width:270px;height:270px;"></div>
+</div>
+
+<script type="module" src="app.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('Service Worker registered', reg))
+      .catch(err => console.error('Service Worker registration failed', err));
+  });
+}
+</script>
+
+
+<script type="application/json" id="lottie-json">
+{"nm":"newScene","ddd":0,"h":273.2,"w":403.79,"meta":{"g":"SVG to Lottie"},"layers":[{"ty":4,"nm":"Layer_1","sr":1,"st":0,"op":150,"ip":0,"hd":false,"ln":"Layer_1","ddd":0,"bm":0,"hasMask":false,"ao":0,"ks":{"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]},"sk":{"a":0,"k":0},"p":{"a":0,"k":[0,0]},"r":{"a":0,"k":0},"sa":{"a":0,"k":0},"o":{"a":0,"k":100}},"ef":[],"shapes":[{"ty":"gr","bm":0,"hd":false,"nm":"","it":[{"ty":"sh","bm":0,"hd":false,"nm":"","d":1,"ks":{"a":0,"k":{"c":true,"i":[[0,0],[-0.38999999999998636,-0.6700000000000017],[0.45999999999997954,-0.8700000000000045],[2.0600000000000023,-3.819999999999993],[3.180000000000007,-5.3300000000000125],[18.25,-2.420000000000016],[5.187456644797749,0.07113552795090072],[16.670000000000016,0.15000000000000568],[21.75,-0.5999999999999943],[9.109999999999985,-7.420000000000016],[4.9599999999999795,-9.090000000000003],[17.53,-34.870000000000005],[10.146666666666667,-20.0066666666667],[8.88000000000001,0.12000000000000455],[20,0.020000000000038654],[-1.5,2.8799999999999955],[-17.439999999999998,33.620000000000005],[-18.379999999999995,33.85999999999999],[-3.6699999999999875,6.449999999999989],[-17.960000000000008,8.120000000000005],[-9.52000000000001,0.3999999999999915],[-150.07999999999998,-2.3100000000000023]],"o":[[0.2699999999999818,0],[0.2599999999999909,0.4300000000000068],[-2.0600000000000023,3.819999999999993],[-2.9499999999999886,5.460000000000008],[-9.480000000000018,15.919999999999987],[-5.155723544473801,0.5773053247214079],[-16.660000000000025,0.09999999999999432],[-21.769999999999982,-0.13999999999998636],[-11.850000000000023,0.3199999999999932],[-8.140000000000015,6.610000000000014],[-18.629999999999967,34.25],[-10.080000000000004,20.053333333333324],[-3.8300000000000125,7.560000000000002],[-20,-0.2599999999999909],[-3.219999999999999,0],[17.189999999999998,-33.79000000000002],[17.72,-34.18666666666667],[3.5200000000000102,-6.5],[9.900000000000006,-17.349999999999994],[15.460000000000008,-7],[35.56999999999999,-1.5100000000000051],[0,0]],"v":[[455.94,120.87],[457.76,121.54],[457.45,123.48],[451.33,134.96],[442.39,151.29000000000002],[400.44,178.29000000000002],[384.90999999999997,179.05],[334.90999999999997,178.9],[269.60999999999996,179.41],[238.38999999999996,192.5],[219.62999999999997,216.75],[165.77,320.65],[135.43,380.74],[116.95,392.22],[56.95,392.11],[54.95,388.73],[106.58,287.38],[160.73,185.31],[171.39999999999998,165.86],[214.07999999999998,128.59],[252.51,120.82000000000001],[455.94,120.87]]}}},{"ty":"sh","bm":0,"hd":false,"nm":"","d":1,"ks":{"a":0,"k":{"c":true,"i":[[0,0],[19.56000000000003,-0.38999999999998636],[6.060000000000002,-10.660000000000025],[3.780000000000001,-7.240000000000009],[12.286666666666653,-23.600000000000023],[-3.240000000000009,-0.009999999999990905],[-15.680000000000007,0.3100000000000023],[-5.569999999999993,11.399999999999977],[-6.419999999999959,12.949999999999989],[-6.46999999999997,0.11000000000001364],[-5.519999999999982,0.06999999999999318],[-10.590000000000032,1.259999999999991],[-4.930000000000007,8.71999999999997],[-4.920000000000016,9.419999999999959],[4.089999999999975,0],[0,0]],"o":[[-19.569999999999993,0],[-11.830000000000013,0.2300000000000182],[-4,7.089999999999975],[-12.306666666666672,23.593333333333323],[-1.4300000000000068,2.75],[15.659999999999997,0],[12.280000000000001,-0.2400000000000091],[6.340000000000003,-13],[3,-6],[5.529999999999973,-0.08999999999997499],[10.629999999999995,-0.19999999999998863],[9.839999999999975,-1.1800000000000068],[5.230000000000018,-9.25],[1.829999999999984,-3.519999999999982],[0,0],[0,0]],"v":[[299,280.54],[240.29,280.65000000000003],[212.6,296.46000000000004],[201.13,318.09000000000003],[164.24,388.88000000000005],[166.54000000000002,392.51000000000005],[213.54000000000002,392.43000000000006],[240.68,375.36000000000007],[260.15,336.63000000000005],[274.48999999999995,327.83000000000004],[291.0799999999999,327.83000000000004],[322.94999999999993,327.32000000000005],[345.66999999999996,312.7300000000001],[360.52,284.5200000000001],[357.99,280.5200000000001],[299,280.5200000000001]]}}},{"ty":"sh","bm":0,"hd":false,"nm":"","d":1,"ks":{"a":0,"k":{"c":true,"i":[[0,0],[-6.170000000000016,11.090000000000003],[-2.75,5.189999999999998],[-1.9800000000000182,3.7600000000000193],[1.92999999999995,0.13999999999998636],[0.9399999999999977,0],[0,0],[32.94000000000002,0],[6.070000000000022,-11.610000000000014],[4.846666666666674,-9.166666666666666],[-3.1200000000000045,-0.06999999999999318],[-20.939999999999998,0.1599999999999966]],"o":[[12.589999999999975,-0.09999999999999432],[2.8500000000000227,-5.1200000000000045],[2,-3.75],[1,-1.8499999999999943],[-0.9300000000000068,-0.060000000000002274],[0,0],[-32.926666666666655,0],[-12.529999999999973,0],[-4.793333333333332,9.200000000000008],[-1.4300000000000068,2.7299999999999898],[0.34000000000003183,-0.020000000000067075],[0,0]],"v":[[365.40999999999997,252.22000000000003],[393.76,235.40000000000003],[402.08,219.89000000000004],[407.99,208.59000000000003],[406.34000000000003,205.74000000000004],[403.53000000000003,205.67000000000004],[378.27,205.67000000000004],[279.46999999999997,205.67000000000004],[250.80999999999997,221.48000000000005],[236.34999999999997,249.03000000000006],[238.27999999999997,252.25000000000006],[365.42,252.22]]}}},{"ty":"gf","bm":0,"hd":false,"nm":"","e":{"a":0,"k":[327.5,441.59]},"g":{"p":8,"k":{"a":0,"k":[0.27,0.996078431372549,0.4392156862745098,0,0.29,0.9921568627450981,0.4117647058823529,0,0.37,0.9764705882352941,0.28627450980392155,0,0.46,0.9647058823529412,0.1803921568627451,0,0.55,0.9529411764705882,0.10196078431372549,0,0.66,0.9450980392156862,0.043137254901960784,0,0.79,0.9411764705882353,0.011764705882352941,0,1,0.9411764705882353,0,0]}},"t":1,"a":{"a":0,"k":0},"h":{"a":0,"k":0},"s":{"a":0,"k":[181.96,64.94]},"r":1,"o":{"a":0,"k":100}},{"ty":"tm","bm":0,"hd":false,"nm":"","e":{"a":1,"k":[{"o":{"x":0.167,"y":0.167},"i":{"x":0.833,"y":0.833},"s":[0],"t":0},{"s":[100],"t":120}]},"o":{"a":0,"k":0},"s":{"a":null,"k":0},"m":1},{"ty":"tr","a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]},"sk":{"a":0,"k":0},"p":{"a":0,"k":[-54.1,-119.4]},"r":{"a":0,"k":0},"sa":{"a":0,"k":0},"o":{"a":0,"k":100}}]}],"ind":1}],"v":"5.7.0","fr":60,"op":150,"ip":0,"assets":[]}
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+
+<script>
+lottie.loadAnimation({
+    container: document.getElementById('lottieDiv'),
+    renderer: 'svg',
+    loop: true,
+    autoplay: true,
+    animationData: JSON.parse(
+        document.getElementById('lottie-json').textContent
+    )
+});
+</script>
+</body>
+</html>
