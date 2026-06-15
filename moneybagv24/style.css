@@ -968,7 +968,7 @@ a { color: inherit; text-decoration: none; }
 
 .bank-card{
   position: absolute;
-  left: 6px; right: 6px; bottom: 0;
+  left: 6px; right: 6px; bottom: 18px;
   background: var(--bank-peek-bg);
   border-radius: var(--radius);
   border: 1.5px solid var(--card-border);
