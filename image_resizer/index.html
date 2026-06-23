@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <!-- Added maximum-scale=1.0 to prevent annoying zoom-ins on mobile inputs -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Image Resizer — crop, resize, and export images entirely in your browser." />
+  <title>Image Resizer</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ============================================================= -->
+  <!-- FLOATING CONTROLS (Theme only)                                -->
+  <!-- ============================================================= -->
+  <div class="floating-controls">
+    <button id="themeToggle" class="icon-btn" title="Toggle light / dark mode" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    </button>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- TOAST / NOTIFICATION CONTAINER                                -->
+  <!-- ============================================================= -->
+  <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <main class="app-main">
+    <!-- ========================================================= -->
+    <!-- LEFT COLUMN: UPLOAD + BATCH + ACTIONS                     -->
+    <!-- ========================================================= -->
+    <section class="col col-left">
+
+      <!-- Upload Card -->
+      <div class="card glass">
+        <div class="card-head">
+          <h2>1 · Upload</h2>
+        </div>
+
+        <!-- Drag & drop / browse area -->
+        <div id="dropZone" class="dropzone" tabindex="0" role="button" aria-label="Upload images by dragging here or pressing Enter to browse">
+          <div class="dropzone-inner">
+            <div class="dropzone-icon">
+              <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            </div>
+            <p class="dropzone-title">Drag &amp; drop image(s) here</p>
+            <p class="dropzone-sub">or</p>
+            <button id="browseBtn" class="btn btn-primary" type="button">Browse Files</button>
+            <p class="dropzone-formats">Supports JPG · PNG · WEBP</p>
+          </div>
+          <input id="fileInput" type="file" accept="image/jpeg,image/jpg,image/png,image/webp" multiple hidden />
+        </div>
+
+        <!-- Upload progress -->
+        <div id="uploadProgress" class="progress-wrap hidden">
+          <div class="progress-label"><span>Loading image…</span><span id="uploadPercent">0%</span></div>
+          <div class="progress-track"><div id="uploadBar" class="progress-bar"></div></div>
+        </div>
+      </div>
+
+      <!-- Batch queue (multiple images) -->
+      <div id="batchCard" class="card glass hidden">
+        <div class="card-head">
+          <h2>Batch Queue</h2>
+          <span id="batchCount" class="badge">0</span>
+        </div>
+        <div id="batchList" class="batch-list"></div>
+        <div class="batch-actions">
+          <button id="batchProcessBtn" class="btn btn-secondary btn-sm" type="button">Process All</button>
+          <button id="batchDownloadBtn" class="btn btn-secondary btn-sm" type="button">Download All</button>
+        </div>
+      </div>
+
+      <!-- Resize action buttons -->
+      <div id="actionCard" class="card glass hidden">
+        <div class="card-head"><h2>2 · Resize Mode</h2></div>
+        
+        <!-- Output dimensions -->
+        <div class="field-row">
+          <div class="field">
+            <label for="widthInput">Width (px)</label>
+            <input id="widthInput" class="input" type="number" min="1" max="8000" value="300" />
+          </div>
+          <button id="lockRatio" class="icon-btn lock" title="Lock aspect ratio" aria-pressed="false">
+            <svg class="lock-open" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>
+            <svg class="lock-closed" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </button>
+          <div class="field">
+            <label for="heightInput">Height (px)</label>
+            <input id="heightInput" class="input" type="number" min="1" max="8000" value="300" />
+          </div>
+        </div>
+
+        <div class="action-grid">
+          <button id="cropBtn" class="btn btn-primary action-btn" type="button">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v14a2 2 0 0 0 2 2h14"></path><path d="M18 22V8a2 2 0 0 0-2-2H2"></path></svg>
+            Crop &amp; Resize
+          </button>
+          <button id="stretchBtn" class="btn btn-secondary action-btn" type="button">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+            Stretch Resize
+          </button>
+        </div>
+        <button id="resetBtn" class="btn btn-ghost btn-sm full" type="button">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+          Reset
+        </button>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- MIDDLE COLUMN: PREVIEWS                                   -->
+    <!-- ========================================================= -->
+    <section class="col col-middle">
+      <!-- Empty state -->
+      <div id="emptyState" class="card glass empty-state">
+        <div class="empty-illustration">
+          <svg viewBox="0 0 24 24" width="56" height="56" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        </div>
+        <h3>No image yet</h3>
+        <p>Upload an image to get started.</p>
+      </div>
+
+      <!-- Preview area -->
+      <div id="previewArea" class="hidden">
+        <div class="card glass">
+          <div class="card-head">
+            <h2>Live Preview</h2>
+          </div>
+
+          <!-- Stacked / Centered Cards -->
+          <div id="splitView" class="preview-grid">
+            <figure id="originalCard" class="preview-card">
+              <figcaption class="preview-cap">Original</figcaption>
+              <div class="preview-frame checker"><img id="originalImg" alt="Original preview" /></div>
+              <div class="preview-meta">
+                <span id="origW">—</span> × <span id="origH">—</span> px ·
+                <span id="origSize">—</span>
+              </div>
+            </figure>
+            
+            <figure id="processedCard" class="preview-card hidden">
+              <figcaption class="preview-cap">Processed Result</figcaption>
+              <div class="preview-frame checker"><img id="processedImg" alt="Processed preview" /></div>
+              <div class="preview-meta">
+                <span id="procW">—</span> × <span id="procH">—</span> px ·
+                <span id="procSize">—</span>
+              </div>
+            </figure>
+          </div>
+
+          <!-- Processing progress overlay info -->
+          <div id="processingBar" class="progress-wrap hidden">
+            <div class="progress-label"><span id="processingLabel">Processing…</span><span id="processingPercent"></span></div>
+            <div class="progress-track"><div id="processBar" class="progress-bar indeterminate"></div></div>
+          </div>
+        </div>
+
+        <!-- Result stats -->
+        <div class="card glass">
+          <div class="card-head"><h2>Result</h2></div>
+          <div class="stats-grid">
+            <div class="stat">
+              <span class="stat-label">Final dimensions</span>
+              <span id="statDims" class="stat-value">—</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Final file size</span>
+              <span id="statSize" class="stat-value">—</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Compression ratio</span>
+              <span id="statRatio" class="stat-value">—</span>
+            </div>
+          </div>
+          <div class="result-actions">
+            <button id="downloadBtn" class="btn btn-primary" type="button" disabled>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              <span class="btn-label">Download</span>
+            </button>
+            <button id="copyBtn" class="btn btn-secondary" type="button" disabled>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span class="btn-label">Copy</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- RIGHT COLUMN: INFO & SETTINGS                             -->
+    <!-- ========================================================= -->
+    <aside class="col col-right">
+      
+      <!-- File info (Moved here) -->
+      <div id="fileInfoCard" class="card glass hidden">
+        <div class="card-head"><h2>File Info</h2></div>
+        <ul class="info-list">
+          <li><span>Name</span><strong id="infoName">—</strong></li>
+          <li><span>Original dimensions</span><strong id="infoDims">—</strong></li>
+          <li><span>Original size</span><strong id="infoSize">—</strong></li>
+        </ul>
+      </div>
+
+      <!-- Settings -->
+      <div id="settingsCard" class="card glass">
+        <div class="card-head"><h2>3 · Output Settings</h2></div>
+
+        <!-- Format -->
+        <div class="field">
+          <label for="formatSelect">File format</label>
+          <select id="formatSelect" class="input">
+            <option value="image/jpeg">JPG</option>
+            <option value="image/png">PNG</option>
+            <option value="image/webp">WEBP</option>
+          </select>
+        </div>
+
+        <!-- Quality -->
+        <div class="field">
+          <label for="qualitySlider">Compression quality <span id="qualityVal" class="pill">90%</span></label>
+          <input id="qualitySlider" class="slider" type="range" min="1" max="100" value="90" />
+        </div>
+
+        <!-- Target file size -->
+        <div class="field">
+          <label for="targetSize">Target file size (KB) <span class="hint">optional</span></label>
+          <input id="targetSize" class="input" type="number" min="1" placeholder="e.g. 100" />
+          <div class="preset-row">
+            <button class="chip" data-target="50" type="button">50 KB</button>
+            <button class="chip" data-target="100" type="button">100 KB</button>
+            <button class="chip" data-target="150" type="button">150 KB</button>
+            <button class="chip" data-target="200" type="button">200 KB</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- ============================================================= -->
+  <!-- CROP MODAL                                                    -->
+  <!-- ============================================================= -->
+  <div id="cropModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="cropTitle">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel glass">
+      <div class="modal-head">
+        <h2 id="cropTitle">Crop &amp; Resize <span class="hint" id="cropRatioHint">— crop ratio follows your output size</span></h2>
+        <button class="icon-btn" data-close aria-label="Close">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="crop-stage">
+          <img id="cropImage" alt="Image to crop" />
+        </div>
+
+        <div class="crop-tools">
+          <div class="crop-tool-group">
+            <button id="zoomIn" class="icon-btn" title="Zoom in (+)" aria-label="Zoom in"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg></button>
+            <button id="zoomOut" class="icon-btn" title="Zoom out (-)" aria-label="Zoom out"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg></button>
+            <button id="rotateLeft" class="icon-btn" title="Rotate left" aria-label="Rotate left"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg></button>
+            <button id="rotateRight" class="icon-btn" title="Rotate right" aria-label="Rotate right"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:scaleX(-1)"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg></button>
+            <button id="cropReset" class="icon-btn" title="Reset crop" aria-label="Reset crop"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-foot">
+        <button id="cropCancel" class="btn btn-ghost" data-close type="button">Cancel</button>
+        <button id="cropConfirm" class="btn btn-primary" type="button">
+          <span class="btn-label">Apply Crop</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
