@@ -1,8 +1,8 @@
 {
   "password": "123456",
   "subject": "Physics",
-  "examTime": 60,
-  "totalMarks": 100,
+  "examTime": 2,
+  "totalMarks": 15,
   "negativeMark": 0.25,
   "questions": [
     {
