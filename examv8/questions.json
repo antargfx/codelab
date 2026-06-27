@@ -1,6 +1,6 @@
 {
   "subject": "Physics",
-  "examTime": 2,
+  "examTime": 20,
   "totalMarks": 20,
   "negativeMark": 0.25,
   "questions": [
