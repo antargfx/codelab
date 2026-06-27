@@ -1,0 +1,229 @@
+{
+  "password": "123456",
+  "subject": "Physics",
+  "examTime": 2,
+  "totalMarks": 20,
+  "negativeMark": 0.25,
+  "questions": [
+    {
+      "id": 1,
+      "question": "Which of the following is the SI unit of electric current?",
+      "options": {
+        "A": "Volt",
+        "B": "Ohm",
+        "C": "Ampere",
+        "D": "Watt"
+      },
+      "answer": "C"
+    },
+    {
+      "id": 2,
+      "question": "The speed of light in vacuum is approximately:",
+      "options": {
+        "A": "3 × 10⁶ m/s",
+        "B": "3 × 10⁸ m/s",
+        "C": "3 × 10¹⁰ m/s",
+        "D": "3 × 10¹² m/s"
+      },
+      "answer": "B"
+    },
+    {
+      "id": 3,
+      "question": "Newton's second law of motion states that force equals:",
+      "options": {
+        "A": "Mass × Velocity",
+        "B": "Mass × Distance",
+        "C": "Mass × Acceleration",
+        "D": "Mass × Time"
+      },
+      "answer": "C"
+    },
+    {
+      "id": 4,
+      "question": "Which type of wave does not require a medium to travel?",
+      "options": {
+        "A": "Sound waves",
+        "B": "Mechanical waves",
+        "C": "Seismic waves",
+        "D": "Electromagnetic waves"
+      },
+      "answer": "D"
+    },
+    {
+      "id": 5,
+      "question": "The law of conservation of energy states that energy can be:",
+      "options": {
+        "A": "Created but not destroyed",
+        "B": "Neither created nor destroyed",
+        "C": "Destroyed but not created",
+        "D": "Both created and destroyed"
+      },
+      "answer": "B"
+    },
+    {
+      "id": 6,
+      "question": "What is the unit of resistance in the SI system?",
+      "options": {
+        "A": "Farad",
+        "B": "Henry",
+        "C": "Tesla",
+        "D": "Ohm"
+      },
+      "answer": "D"
+    },
+    {
+      "id": 7,
+      "question": "Which of the following phenomena supports the wave nature of light?",
+      "options": {
+        "A": "Photoelectric effect",
+        "B": "Compton scattering",
+        "C": "Diffraction",
+        "D": "Pair production"
+      },
+      "answer": "C"
+    },
+    {
+      "id": 8,
+      "question": "The gravitational acceleration near Earth's surface is approximately:",
+      "options": {
+        "A": "6.67 m/s²",
+        "B": "9.81 m/s²",
+        "C": "11.2 m/s²",
+        "D": "3.71 m/s²"
+      },
+      "answer": "B"
+    },
+    {
+      "id": 9,
+      "question": "Which particle carries a positive charge in an atom?",
+      "options": {
+        "A": "Electron",
+        "B": "Neutron",
+        "C": "Proton",
+        "D": "Photon"
+      },
+      "answer": "C"
+    },
+    {
+      "id": 10,
+      "question": "The phenomenon of total internal reflection is used in:",
+      "options": {
+        "A": "Microscope",
+        "B": "Optical fibre",
+        "C": "Telescope",
+        "D": "Periscope"
+      },
+      "answer": "B"
+    },
+    {
+      "id": 11,
+      "question": "Ohm's law relates voltage (V), current (I), and resistance (R) as:",
+      "options": {
+        "A": "V = I + R",
+        "B": "V = I / R",
+        "C": "V = I × R",
+        "D": "V = I - R"
+      },
+      "answer": "C"
+    },
+    {
+      "id": 12,
+      "question": "Which of the following is NOT a vector quantity?",
+      "options": {
+        "A": "Force",
+        "B": "Velocity",
+        "C": "Speed",
+        "D": "Acceleration"
+      },
+      "answer": "C"
+    },
+    {
+      "id": 13,
+      "question": "The work done by a force is zero when the force and displacement are:",
+      "options": {
+        "A": "Parallel",
+        "B": "Anti-parallel",
+        "C": "Perpendicular",
+        "D": "At 45°"
+      },
+      "answer": "C"
+    },
+    {
+      "id": 14,
+      "question": "The period of a simple pendulum depends on:",
+      "options": {
+        "A": "Mass of the bob",
+        "B": "Length of the string",
+        "C": "Amplitude of swing",
+        "D": "Material of the bob"
+      },
+      "answer": "B"
+    },
+    {
+      "id": 15,
+      "question": "Which scientist proposed the three laws of planetary motion?",
+      "options": {
+        "A": "Isaac Newton",
+        "B": "Galileo Galilei",
+        "C": "Johannes Kepler",
+        "D": "Nicolaus Copernicus"
+      },
+      "answer": "C"
+    },
+    {
+      "id": 16,
+      "question": "The kinetic energy of an object is proportional to:",
+      "options": {
+        "A": "Its velocity",
+        "B": "The square of its velocity",
+        "C": "The cube of its velocity",
+        "D": "Its displacement"
+      },
+      "answer": "B"
+    },
+    {
+      "id": 17,
+      "question": "Which of the following has the highest frequency?",
+      "options": {
+        "A": "Radio waves",
+        "B": "Infrared radiation",
+        "C": "Visible light",
+        "D": "Gamma rays"
+      },
+      "answer": "D"
+    },
+    {
+      "id": 18,
+      "question": "Archimedes' principle states that the buoyant force on an object equals:",
+      "options": {
+        "A": "The weight of the object",
+        "B": "The mass of the fluid displaced",
+        "C": "The weight of the fluid displaced",
+        "D": "The volume of the fluid displaced"
+      },
+      "answer": "C"
+    },
+    {
+      "id": 19,
+      "question": "The process of converting electrical energy to mechanical energy is done by a:",
+      "options": {
+        "A": "Generator",
+        "B": "Transformer",
+        "C": "Motor",
+        "D": "Capacitor"
+      },
+      "answer": "C"
+    },
+    {
+      "id": 20,
+      "question": "Which law states that the pressure and volume of a gas are inversely proportional at constant temperature?",
+      "options": {
+        "A": "Charles's Law",
+        "B": "Boyle's Law",
+        "C": "Gay-Lussac's Law",
+        "D": "Avogadro's Law"
+      },
+      "answer": "B"
+    }
+  ]
+}
