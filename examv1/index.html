@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="MCQ Exam Preparation Platform — attempt timed exams with instant results." />
+  <title>ExamPrep — Online MCQ Platform</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Google Fonts: Inter for body, Syne for display headings -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       LOADING SCREEN — shown while JSON is being fetched
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="loadingScreen" class="screen active">
+    <div class="loader-card">
+      <div class="spinner"></div>
+      <p class="loader-text">Loading exam data…</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       ERROR SCREEN — shown if JSON fails to load
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="errorScreen" class="screen">
+    <div class="error-card">
+      <div class="error-icon">⚠</div>
+      <h2>Failed to Load Exam</h2>
+      <p id="errorMessage">Could not fetch questions.json. Make sure the file exists and the server is running.</p>
+      <button class="btn btn-primary" onclick="location.reload()">Try Again</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       LOGIN SCREEN
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="loginScreen" class="screen">
+    <div class="login-container">
+
+      <!-- Brand / header -->
+      <div class="login-header">
+        <div class="brand-icon">📋</div>
+        <h1 class="brand-title">ExamPrep</h1>
+        <p class="brand-sub">MCQ Online Examination Portal</p>
+      </div>
+
+      <!-- Exam info card (populated from JSON) -->
+      <div class="exam-info-card">
+        <div class="exam-info-row">
+          <span class="exam-info-label">Subject</span>
+          <span class="exam-info-value" id="loginSubject">—</span>
+        </div>
+        <div class="exam-info-row">
+          <span class="exam-info-label">Duration</span>
+          <span class="exam-info-value" id="loginDuration">—</span>
+        </div>
+        <div class="exam-info-row">
+          <span class="exam-info-label">Total Marks</span>
+          <span class="exam-info-value" id="loginMarks">—</span>
+        </div>
+        <div class="exam-info-row">
+          <span class="exam-info-label">Negative Marking</span>
+          <span class="exam-info-value" id="loginNegative">—</span>
+        </div>
+      </div>
+
+      <!-- Login form -->
+      <form class="login-form" id="loginForm" onsubmit="return false;">
+        <div class="form-group">
+          <label for="studentName">Full Name</label>
+          <input
+            type="text"
+            id="studentName"
+            placeholder="Enter your full name"
+            autocomplete="name"
+            maxlength="80"
+          />
+          <span class="field-error" id="nameError"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="studentMobile">Mobile Number</label>
+          <input
+            type="tel"
+            id="studentMobile"
+            placeholder="Enter your mobile number"
+            autocomplete="tel"
+            maxlength="15"
+          />
+          <span class="field-error" id="mobileError"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="examPassword">Exam Password</label>
+          <div class="password-wrapper">
+            <input
+              type="password"
+              id="examPassword"
+              placeholder="Enter exam password"
+              autocomplete="current-password"
+            />
+            <button type="button" class="toggle-pw" id="togglePw" aria-label="Toggle password visibility">👁</button>
+          </div>
+          <span class="field-error" id="passwordError"></span>
+        </div>
+
+        <div class="form-alert" id="loginAlert" aria-live="polite"></div>
+
+        <button type="submit" class="btn btn-primary btn-full" id="startBtn" onclick="handleLogin()">
+          Start Exam
+        </button>
+      </form>
+
+      <p class="login-footer">
+        Once the exam begins, the timer starts immediately and cannot be paused.
+      </p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       EXAM SCREEN
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="examScreen" class="screen">
+
+    <!-- Top bar -->
+    <header class="exam-topbar">
+      <div class="topbar-left">
+        <span class="topbar-subject" id="topbarSubject">Subject</span>
+        <span class="topbar-student" id="topbarStudent">Student Name</span>
+      </div>
+      <div class="topbar-center">
+        <div class="timer-block" id="timerBlock">
+          <span class="timer-icon">⏱</span>
+          <span class="timer-display" id="timerDisplay">60:00</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="progress-block">
+          <span class="progress-label">Question</span>
+          <span class="progress-value"><span id="currentQNum">1</span> / <span id="totalQNum">20</span></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Stats bar -->
+    <div class="stats-bar">
+      <div class="stat-chip stat-answered">
+        <span class="stat-dot dot-green"></span>
+        <span>Answered: <strong id="statAnswered">0</strong></span>
+      </div>
+      <div class="stat-chip stat-unanswered">
+        <span class="stat-dot dot-red"></span>
+        <span>Unanswered: <strong id="statUnanswered">0</strong></span>
+      </div>
+      <div class="stat-chip stat-remaining">
+        <span class="stat-dot dot-gray"></span>
+        <span>Remaining: <strong id="statRemaining">0</strong></span>
+      </div>
+    </div>
+
+    <!-- Main exam body -->
+    <div class="exam-body">
+
+      <!-- Question panel -->
+      <div class="question-panel">
+        <div class="question-header">
+          <span class="q-badge" id="qBadge">Q1</span>
+          <span class="q-category">Multiple Choice</span>
+        </div>
+
+        <!-- Question text with transition wrapper -->
+        <div class="question-transition" id="questionTransition">
+          <p class="question-text" id="questionText">Loading question…</p>
+
+          <!-- OMR-style options -->
+          <div class="options-grid" id="optionsGrid">
+            <!-- Options are injected here by script.js -->
+          </div>
+        </div>
+
+        <!-- Navigation buttons -->
+        <div class="nav-buttons">
+          <button class="btn btn-outline" id="prevBtn" onclick="navigatePrev()">← Previous</button>
+          <button class="btn btn-outline" id="nextBtn" onclick="navigateNext()">Next →</button>
+        </div>
+
+        <!-- Submit button -->
+        <div class="submit-row">
+          <button class="btn btn-danger btn-submit" onclick="openSubmitModal()">Submit Exam</button>
+        </div>
+      </div>
+
+      <!-- Question palette sidebar -->
+      <aside class="palette-panel">
+        <div class="palette-header">
+          <h3 class="palette-title">Question Palette</h3>
+          <div class="palette-legend">
+            <span class="legend-item"><span class="legend-dot dot-green"></span> Answered</span>
+            <span class="legend-item"><span class="legend-dot dot-red"></span> Visited</span>
+            <span class="legend-item"><span class="legend-dot dot-gray"></span> Not Visited</span>
+            <span class="legend-item"><span class="legend-dot dot-blue"></span> Current</span>
+          </div>
+        </div>
+        <div class="palette-grid" id="paletteGrid">
+          <!-- Palette buttons injected by script.js -->
+        </div>
+      </aside>
+
+    </div><!-- /.exam-body -->
+  </div><!-- /#examScreen -->
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SUBMIT CONFIRMATION MODAL
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="submitModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <h2 class="modal-title" id="modalTitle">Submit Exam?</h2>
+      <div class="modal-stats" id="modalStats">
+        <!-- Populated by script.js before opening -->
+      </div>
+      <p class="modal-warning">Once submitted, you cannot change your answers.</p>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeSubmitModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="submitExam()">Yes, Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       TAB SWITCH WARNING MODAL
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="tabWarningModal" class="modal-overlay" role="alertdialog" aria-labelledby="tabWarningTitle">
+    <div class="modal-card modal-warning-card">
+      <div class="modal-warning-icon">⚠️</div>
+      <h2 class="modal-title" id="tabWarningTitle">Tab Switch Detected!</h2>
+      <p id="tabWarningMsg">You left the exam tab. This has been recorded.</p>
+      <p class="modal-warning tab-warning-sub">Switching tabs more than 3 times will auto-submit your exam.</p>
+      <button class="btn btn-primary" onclick="closeTabWarning()">I Understand</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       RESULT SCREEN
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="resultScreen" class="screen">
+    <div class="result-container">
+
+      <!-- Result header -->
+      <div class="result-header">
+        <div class="result-icon" id="resultIcon">🎉</div>
+        <h2 class="result-verdict" id="resultVerdict">PASS</h2>
+        <p class="result-subject" id="resultSubject">Physics</p>
+      </div>
+
+      <!-- Score card -->
+      <div class="scorecard">
+        <div class="score-main">
+          <div class="score-circle" id="scoreCircle">
+            <span class="score-number" id="scoreNumber">0</span>
+            <span class="score-total" id="scoreTotal">/ 100</span>
+          </div>
+          <div class="score-percentage" id="scorePercentage">0%</div>
+        </div>
+
+        <!-- Student details -->
+        <div class="result-details">
+          <div class="detail-row">
+            <span class="detail-label">Student Name</span>
+            <span class="detail-value" id="resultName">—</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Mobile</span>
+            <span class="detail-value" id="resultMobile">—</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Start Time</span>
+            <span class="detail-value" id="resultStart">—</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Submit Time</span>
+            <span class="detail-value" id="resultEnd">—</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Duration</span>
+            <span class="detail-value" id="resultDuration">—</span>
+          </div>
+        </div>
+
+        <!-- Answer breakdown -->
+        <div class="result-breakdown">
+          <div class="breakdown-card breakdown-correct">
+            <span class="breakdown-number" id="breakdownCorrect">0</span>
+            <span class="breakdown-label">Correct</span>
+          </div>
+          <div class="breakdown-card breakdown-wrong">
+            <span class="breakdown-number" id="breakdownWrong">0</span>
+            <span class="breakdown-label">Wrong</span>
+          </div>
+          <div class="breakdown-card breakdown-untouched">
+            <span class="breakdown-number" id="breakdownUntouched">0</span>
+            <span class="breakdown-label">Not Answered</span>
+          </div>
+        </div>
+
+        <!-- Save status -->
+        <p class="save-status" id="saveStatus"></p>
+
+        <!-- Actions -->
+        <div class="result-actions">
+          <button class="btn btn-primary" onclick="restartExam()">Restart Exam</button>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /#resultScreen -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       FIREBASE SDK (compat v9) — load before firebase.js
+  ══════════════════════════════════════════════════════════════ -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <!-- App scripts — order matters -->
+  <script src="config.js"></script>
+  <script src="firebase.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
