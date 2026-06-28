@@ -328,6 +328,7 @@ body {
   font-weight: 600;
   font-size: 0.9rem;
   color: var(--clr-primary);
+  text-align: right;
 }
 
 .login-form {
@@ -559,6 +560,8 @@ body {
 /* Stats bar */
 .stats-bar {
   display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 10px;
   padding: 10px 24px;
   background: var(--clr-surface);
@@ -569,8 +572,9 @@ body {
 .stat-chip {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 7px;
-  font-size: 0.82rem;
+  font-size: 0.60rem;
   color: var(--clr-text-muted);
   background: var(--clr-surface-2);
   padding: 5px 12px;
