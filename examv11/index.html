@@ -17,13 +17,6 @@
 </head>
 <body>
 
-  <!-- Theme Toggle -->
-  <div class="theme-toggle-bar">
-    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle light/dark mode">
-      <i class="fa-solid fa-moon" id="themeIcon"></i>
-    </button>
-  </div>
-
   <!-- ══════════════════════════════════════════════════════════════
        LOADING SCREEN
   ══════════════════════════════════════════════════════════════ -->
@@ -149,9 +142,10 @@
           <span class="progress-label">Progress</span>
           <span class="progress-value"><span id="statAnswered">0</span> / <span id="totalQNum">20</span></span>
         </div>
-        <button class="btn btn-danger btn-submit-top" onclick="openSubmitModal()">
-          <i class="fa-solid fa-paper-plane"></i> Submit
-        </button>
+          <!-- Theme Toggle -->
+          <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle light/dark mode">
+          <i class="fa-solid fa-moon" id="themeIcon"></i>
+          </button>
       </div>
     </header>
 
