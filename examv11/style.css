@@ -562,7 +562,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 5px;
   padding: 10px 24px;
   background: var(--clr-surface);
   border-bottom: 1px solid var(--clr-border);
@@ -573,7 +573,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 5px;
   font-size: 0.60rem;
   color: var(--clr-text-muted);
   background: var(--clr-surface-2);
