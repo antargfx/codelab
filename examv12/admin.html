@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ExamPrep — Admin Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+
+  <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+      <i class="fa-solid fa-moon" id="themeIcon"></i>
+    </button>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       ADMIN LOGIN GATE
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="adminLoginScreen" class="screen active">
+    <div class="gate-card">
+      <div class="gate-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <h1 class="gate-title">Admin Access</h1>
+      <p class="gate-sub">Enter admin password to continue</p>
+
+      <div class="form-group">
+        <label for="adminPw">Admin Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="adminPw" placeholder="Enter admin password" />
+          <button type="button" class="toggle-pw" id="toggleAdminPw">
+            <i class="fa-solid fa-eye" id="toggleAdminPwIcon"></i>
+          </button>
+        </div>
+      </div>
+      <div class="form-alert" id="adminLoginAlert"></div>
+      <button class="btn btn-primary btn-full" onclick="adminLogin()">
+        <i class="fa-solid fa-right-to-bracket"></i> Login
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       ADMIN DASHBOARD
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="adminDashboard" class="screen">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <i class="fa-solid fa-clipboard-list sidebar-logo"></i>
+        <span class="sidebar-brand">ExamPrep</span>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-item active" onclick="showTab('students')" id="navStudents">
+          <i class="fa-solid fa-users"></i> Students
+        </button>
+        <button class="nav-item" onclick="showTab('results')" id="navResults">
+          <i class="fa-solid fa-chart-bar"></i> Results
+        </button>
+      </nav>
+      <button class="sidebar-logout" onclick="adminLogout()">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+
+      <!-- ── STUDENTS TAB ── -->
+      <div id="tabStudents" class="tab-panel active">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title"><i class="fa-solid fa-users"></i> Student Management</h2>
+            <p class="panel-sub">Add and manage registered students</p>
+          </div>
+          <button class="btn btn-primary" onclick="openAddModal()">
+            <i class="fa-solid fa-plus"></i> Add Student
+          </button>
+        </div>
+
+        <!-- Search bar -->
+        <div class="search-bar">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="studentSearch" placeholder="Search by name or mobile…" oninput="filterStudents()" />
+        </div>
+
+        <!-- Student count -->
+        <p class="record-count" id="studentCount">Loading…</p>
+
+        <!-- Students table -->
+        <div class="table-wrapper">
+          <table class="data-table" id="studentTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Mobile</th>
+                <th>Admission Date</th>
+                <th>Batch / Class</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="studentTableBody">
+              <tr><td colspan="8" class="empty-row"><div class="spinner-sm"></div> Loading students…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── RESULTS TAB ── -->
+      <div id="tabResults" class="tab-panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title"><i class="fa-solid fa-chart-bar"></i> Exam Results</h2>
+            <p class="panel-sub">Exams grouped by subject &amp; date — latest first</p>
+          </div>
+          <button class="btn btn-outline" onclick="loadResults()">
+            <i class="fa-solid fa-rotate-right"></i> Refresh
+          </button>
+        </div>
+
+        <div id="sessionBackRow" style="display:none;margin-bottom:14px;">
+          <button class="btn btn-outline" onclick="closeSessionDetail()">
+            <i class="fa-solid fa-arrow-left"></i> Back to all exams
+          </button>
+        </div>
+
+        <div class="search-bar">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="resultSearch" placeholder="Search by subject or date…" oninput="filterResults()" />
+        </div>
+
+        <p class="record-count" id="resultCount">Loading…</p>
+
+        <div id="resultsContainer">
+          <div class="empty-row" style="padding:40px;text-align:center"><div class="spinner-sm"></div> Loading results…</div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       ADD / EDIT STUDENT MODAL
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="studentModal" class="modal-overlay">
+    <div class="modal-card modal-large">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalStudentTitle">
+          <i class="fa-solid fa-user-plus"></i> Add Student
+        </h2>
+        <button class="modal-close" onclick="closeAddModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="sName">Full Name <span class="required">*</span></label>
+            <input type="text" id="sName" placeholder="e.g. Rahul Islam" maxlength="80" />
+            <span class="field-error" id="sNameErr"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="sMobile">Mobile Number <span class="required">*</span></label>
+            <input type="tel" id="sMobile" placeholder="e.g. 01712345678" maxlength="15" />
+            <span class="field-error" id="sMobileErr"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="sAdmission">Admission Date</label>
+            <input type="date" id="sAdmission" />
+          </div>
+
+          <div class="form-group">
+            <label for="sBatch">Batch / Class</label>
+            <input type="text" id="sBatch" placeholder="e.g. Batch 2024-A" maxlength="60" />
+          </div>
+
+          <div class="form-group">
+            <label for="sEmail">Email (optional)</label>
+            <input type="email" id="sEmail" placeholder="student@email.com" maxlength="100" />
+          </div>
+
+          <div class="form-group">
+            <label for="sStatus">Status</label>
+            <select id="sStatus">
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top:4px;">
+          <label for="sNotes">Notes (optional)</label>
+          <textarea id="sNotes" placeholder="Any additional notes…" rows="2" maxlength="300"></textarea>
+        </div>
+      </div>
+
+      <div class="form-alert" id="modalAlert"></div>
+
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeAddModal()">
+          <i class="fa-solid fa-xmark"></i> Cancel
+        </button>
+        <button class="btn btn-primary" id="saveStudentBtn" onclick="saveStudent()">
+          <i class="fa-solid fa-floppy-disk"></i> Save Student
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       DELETE CONFIRMATION MODAL
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="deleteModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-warning-icon" style="color:var(--clr-danger)">
+        <i class="fa-solid fa-trash"></i>
+      </div>
+      <h2 class="modal-title">Delete Student?</h2>
+      <p id="deleteModalMsg" style="color:var(--clr-text-muted);text-align:center;margin-bottom:20px;"></p>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeDeleteModal()">
+          <i class="fa-solid fa-xmark"></i> Cancel
+        </button>
+        <button class="btn btn-danger" id="confirmDeleteBtn" onclick="confirmDelete()">
+          <i class="fa-solid fa-trash"></i> Yes, Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       DELETE RESULT MODAL
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="deleteResultModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-warning-icon" style="color:var(--clr-danger)">
+        <i class="fa-solid fa-trash"></i>
+      </div>
+      <h2 class="modal-title">Delete Result?</h2>
+      <p id="deleteResultModalMsg" style="color:var(--clr-text-muted);text-align:center;margin-bottom:20px;"></p>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeDeleteResultModal()">
+          <i class="fa-solid fa-xmark"></i> Cancel
+        </button>
+        <button class="btn btn-danger" id="confirmDeleteResultBtn" onclick="confirmDeleteResult()">
+          <i class="fa-solid fa-trash"></i> Yes, Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="mobile-bottom-nav" id="mobileBottomNav">
+    <button class="mobile-nav-item active" onclick="showTab('students')" id="mobileNavStudents">
+      <i class="fa-solid fa-users"></i>
+      <span>Students</span>
+    </button>
+    <button class="mobile-nav-item" onclick="showTab('results')" id="mobileNavResults">
+      <i class="fa-solid fa-chart-bar"></i>
+      <span>Results</span>
+    </button>
+    <button class="mobile-nav-item logout" onclick="adminLogout()">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      <span>Logout</span>
+    </button>
+  </nav>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Firebase SDK (compat v9) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <script src="config.js"></script>
+  <script src="firebase.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
