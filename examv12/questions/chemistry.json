@@ -1,0 +1,228 @@
+{
+  "subject": "Chemistry",
+  "examTime": 2,
+  "totalMarks": 20,
+  "negativeMark": 0.25,
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the chemical symbol for Gold?",
+      "options": {
+        "A": "Go",
+        "B": "Gd",
+        "C": "Au",
+        "D": "Ag"
+      },
+      "answer": "C"
+    },
+    {
+      "id": 2,
+      "question": "What is the pH of a neutral solution?",
+      "options": {
+        "A": "0",
+        "B": "7",
+        "C": "14",
+        "D": "10"
+      },
+      "answer": "B"
+    },
+    {
+      "id": 3,
+      "question": "Which gas is most abundant in Earth's atmosphere?",
+      "options": {
+        "A": "Oxygen",
+        "B": "Carbon dioxide",
+        "C": "Nitrogen",
+        "D": "Hydrogen"
+      },
+      "answer": "C"
+    },
+    {
+      "id": 4,
+      "question": "What is the atomic number of Carbon?",
+      "options": {
+        "A": "6",
+        "B": "12",
+        "C": "8",
+        "D": "14"
+      },
+      "answer": "A"
+    },
+    {
+      "id": 5,
+      "question": "Which of these is a noble gas?",
+      "options": {
+        "A": "Chlorine",
+        "B": "Neon",
+        "C": "Nitrogen",
+        "D": "Hydrogen"
+      },
+      "answer": "B"
+    },
+    {
+      "id": 6,
+      "question": "What type of bond is formed by the sharing of electron pairs?",
+      "options": {
+        "A": "Ionic bond",
+        "B": "Covalent bond",
+        "C": "Metallic bond",
+        "D": "Hydrogen bond"
+      },
+      "answer": "B"
+    },
+    {
+      "id": 7,
+      "question": "What is the chemical formula for table salt?",
+      "options": {
+        "A": "NaCl",
+        "B": "KCl",
+        "C": "CaCl₂",
+        "D": "NaOH"
+      },
+      "answer": "A"
+    },
+    {
+      "id": 8,
+      "question": "Which particle has no electric charge?",
+      "options": {
+        "A": "Proton",
+        "B": "Electron",
+        "C": "Neutron",
+        "D": "Ion"
+      },
+      "answer": "C"
+    },
+    {
+      "id": 9,
+      "question": "What is the process of a liquid turning into a gas called?",
+      "options": {
+        "A": "Condensation",
+        "B": "Sublimation",
+        "C": "Evaporation",
+        "D": "Deposition"
+      },
+      "answer": "C"
+    },
+    {
+      "id": 10,
+      "question": "Which acid is found in the human stomach?",
+      "options": {
+        "A": "Sulfuric acid",
+        "B": "Acetic acid",
+        "C": "Hydrochloric acid",
+        "D": "Nitric acid"
+      },
+      "answer": "C"
+    },
+    {
+      "id": 11,
+      "question": "What is the molar mass of water (H₂O) approximately?",
+      "options": {
+        "A": "16 g/mol",
+        "B": "18 g/mol",
+        "C": "20 g/mol",
+        "D": "22 g/mol"
+      },
+      "answer": "B"
+    },
+    {
+      "id": 12,
+      "question": "Which of the following is an example of an exothermic reaction?",
+      "options": {
+        "A": "Photosynthesis",
+        "B": "Combustion",
+        "C": "Melting ice",
+        "D": "Evaporating water"
+      },
+      "answer": "B"
+    },
+    {
+      "id": 13,
+      "question": "What is the periodic table arranged by?",
+      "options": {
+        "A": "Atomic mass only",
+        "B": "Alphabetical order",
+        "C": "Increasing atomic number",
+        "D": "Date of discovery"
+      },
+      "answer": "C"
+    },
+    {
+      "id": 14,
+      "question": "Which element is essential for making steel from iron?",
+      "options": {
+        "A": "Carbon",
+        "B": "Oxygen",
+        "C": "Nitrogen",
+        "D": "Sulfur"
+      },
+      "answer": "A"
+    },
+    {
+      "id": 15,
+      "question": "What do you call a substance that speeds up a reaction without being consumed?",
+      "options": {
+        "A": "Reactant",
+        "B": "Catalyst",
+        "C": "Solvent",
+        "D": "Product"
+      },
+      "answer": "B"
+    },
+    {
+      "id": 16,
+      "question": "Which of these is a base?",
+      "options": {
+        "A": "HCl",
+        "B": "H₂SO₄",
+        "C": "NaOH",
+        "D": "CH₃COOH"
+      },
+      "answer": "C"
+    },
+    {
+      "id": 17,
+      "question": "What is the chemical name for H₂O₂?",
+      "options": {
+        "A": "Water",
+        "B": "Hydrogen peroxide",
+        "C": "Hydronium",
+        "D": "Hydroxide"
+      },
+      "answer": "B"
+    },
+    {
+      "id": 18,
+      "question": "Which subatomic particle determines the identity of an element?",
+      "options": {
+        "A": "Electron count",
+        "B": "Neutron count",
+        "C": "Proton count",
+        "D": "Isotope mass"
+      },
+      "answer": "C"
+    },
+    {
+      "id": 19,
+      "question": "What is produced when an acid reacts with a metal?",
+      "options": {
+        "A": "Water and oxygen",
+        "B": "Salt and hydrogen gas",
+        "C": "Carbon dioxide only",
+        "D": "Base and water"
+      },
+      "answer": "B"
+    },
+    {
+      "id": 20,
+      "question": "What is the standard unit for measuring amount of substance?",
+      "options": {
+        "A": "Gram",
+        "B": "Liter",
+        "C": "Mole",
+        "D": "Joule"
+      },
+      "answer": "C"
+    }
+  ]
+}
