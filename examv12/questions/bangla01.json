@@ -2,7 +2,7 @@
   "subject": "বাংলা (শব্দার্থ, সমার্থক শব্দ, শব্দজোড় ও প্রায় সমোচ্চারিত শব্দ)",
   "examTime": 30,
   "totalMarks": 30,
-  "negativeMark": -0.25,
+  "negativeMark": 0.25,
   "questions": [
     {
       "id": 1,
