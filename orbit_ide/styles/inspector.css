@@ -1,0 +1,71 @@
+/* ============================================================
+   inspector.css — preview bar, element picker, DOM/CSS inspector
+   ============================================================ */
+
+.preview__bar { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-bottom: 1px solid var(--border); background: var(--surface-1); }
+.addressbar {
+  flex: 1; display: flex; align-items: center; gap: 6px;
+  background: var(--surface-0); border: 1px solid var(--border); border-radius: var(--r-full);
+  padding: 4px 12px; min-width: 0;
+}
+.addressbar__lock { color: var(--success); font-weight: 700; }
+.addressbar__input { border: none; background: none; padding: 4px 0; font-size: 13px; }
+.addressbar__input:focus { box-shadow: none; }
+
+.preview__stage { flex: 1; position: relative; min-height: 0; background: #fff; }
+.preview__frame { width: 100%; height: 100%; border: none; background: #fff; display: block; }
+.preview__overlay { position: absolute; inset: 0; pointer-events: none; }
+.preview__overlay.picking { pointer-events: none; }
+#btnPickElement.is-active { background: var(--accent-soft); color: var(--accent); }
+
+/* Inspector panel (in dock) */
+.inspector { display: flex; height: 100%; min-height: 0; }
+.inspector__dom { flex: 1; overflow: auto; border-right: 1px solid var(--border); padding: 8px; min-width: 0; }
+.inspector__styles { width: 46%; min-width: 240px; overflow: auto; padding: 8px 10px; }
+
+@media (max-width: 680px) {
+  .inspector { flex-direction: column; }
+  .inspector__dom { border-right: none; border-bottom: 1px solid var(--border); flex: none; height: 45%; }
+  .inspector__styles { width: 100%; flex: 1; }
+}
+
+.dom-node { font-family: var(--font-mono); font-size: 12.5px; line-height: 1.7; }
+.dom-line { display: flex; align-items: center; gap: 4px; border-radius: var(--r-sm); padding: 1px 4px; cursor: pointer; white-space: nowrap; }
+.dom-line:hover { background: var(--surface-2); }
+.dom-line.selected { background: var(--accent-soft); }
+.dom-twisty { width: 14px; color: var(--muted); cursor: pointer; flex: 0 0 auto; }
+.dom-twisty.collapsed { transform: rotate(-90deg); }
+.dom-tag { color: var(--info); }
+.dom-attr { color: #d19a66; }
+.dom-attr-val { color: var(--success); }
+.dom-text { color: var(--muted); }
+.dom-children.hidden { display: none; }
+
+.styles-section { margin-bottom: 16px; }
+.styles-section h4 {
+  margin: 0 0 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px;
+  color: var(--muted); font-weight: 700;
+}
+
+/* Box model diagram */
+.boxmodel { margin: 0 auto 14px; max-width: 280px; font-family: var(--font-mono); font-size: 11px; text-align: center; }
+.bm-layer { border: 1px dashed var(--border-strong); padding: 18px 10px 8px; position: relative; border-radius: 4px; }
+.bm-margin { background: hsla(38,95%,50%,0.12); }
+.bm-border { background: hsla(45,90%,55%,0.18); margin: 6px; }
+.bm-padding { background: hsla(120,55%,55%,0.16); margin: 6px; }
+.bm-content { background: hsla(210,90%,55%,0.18); margin: 6px; padding: 14px 8px; }
+.bm-label { position: absolute; top: 2px; left: 6px; color: var(--muted); font-size: 9px; text-transform: uppercase; }
+.bm-val { background: var(--surface-0); border: 1px solid var(--border); border-radius: 3px; padding: 1px 4px; min-width: 22px; display: inline-block; cursor: text; }
+
+.css-rule { font-family: var(--font-mono); font-size: 12px; margin-bottom: 10px; background: var(--surface-inset); border-radius: var(--r-sm); padding: 8px 10px; }
+.css-selector { color: var(--info); }
+.css-prop { color: #d19a66; }
+.css-val { color: var(--success); }
+.css-decl { padding-left: 14px; display: flex; gap: 4px; }
+.css-decl .css-val[contenteditable] { outline: none; border-bottom: 1px dashed transparent; }
+.css-decl .css-val[contenteditable]:focus { border-bottom-color: var(--accent); }
+.css-computed-row { display: flex; justify-content: space-between; padding: 3px 0; font-family: var(--font-mono); font-size: 12px; border-bottom: 1px solid var(--border); }
+.css-computed-row .k { color: var(--muted); }
+
+.dom-edit-bar { display: flex; gap: 6px; padding: 6px; flex-wrap: wrap; border-bottom: 1px solid var(--border); }
+.dom-edit-bar .btn { padding: 6px 10px; font-size: 12px; }
