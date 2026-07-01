@@ -35,7 +35,7 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     Write-Host ""
 
     # Re-download and run the script elevated in a new PowerShell window
-    $url = "https://raw.githubusercontent.com/antargfx/pc-reset/main/PC_Reset_Training_Center_v2.ps1"
+    $url = "https://raw.githubusercontent.com/antargfx/codelab/main/clear/clear.ps1"
     $elevatedCommand = "Set-ExecutionPolicy Bypass -Scope Process -Force; irm '$url' | iex"
 
     Start-Process -FilePath "powershell.exe" `
