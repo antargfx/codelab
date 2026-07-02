@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="AntLab IDE — A browser-based coding playground" />
+  <meta name="theme-color" content="#0d0d12" />
+  <title>AntLab IDE</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet" />
+
+  <!-- CodeMirror CDN (mobile-friendly, lighter than Monaco) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/eclipse.min.css" />
+
+  <!-- App Styles -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ===== SPLASH SCREEN ===== -->
+<div id="splash">
+  <div class="splash-inner">
+    <div class="splash-logo">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+        <rect width="48" height="48" rx="12" fill="url(#logoGrad)"/>
+        <path d="M14 16L22 24L14 32" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M26 32H34" stroke="white" stroke-width="3" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#ff7033"/>
+            <stop offset="1" stop-color="#ff0000"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span>AntLab IDE</span>
+    </div>
+    <div class="splash-bar-wrap"><div class="splash-bar"></div></div>
+    <p class="splash-status">Initializing editor…</p>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="app" class="hidden">
+
+  <!-- TOP HEADER -->
+  <header id="header">
+    <div class="header-left">
+      <button id="menuBtn" class="icon-btn" title="Menu" aria-label="Open menu">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+      <div class="logo-mark">
+        <svg width="22" height="22" viewBox="0 0 48 48" fill="none">
+          <rect width="48" height="48" rx="12" fill="url(#hLogoGrad)"/>
+          <path d="M14 16L22 24L14 32" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M26 32H34" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+          <defs><linearGradient id="hLogoGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse"><stop stop-color="#ff7033"/><stop offset="1" stop-color="#ff0000"/></linearGradient></defs>
+        </svg>
+        <span class="logo-text">AntLab</span>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <span id="projectName" class="project-name">untitled-project</span>
+    </div>
+
+    <div class="header-right">
+      <button id="themeBtn" class="icon-btn" title="Toggle theme" aria-label="Toggle dark/light mode">
+        <svg id="themeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button id="openPreviewBtn" class="btn-accent" title="Open in new tab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="15,3 21,3 21,9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="10" y1="14" x2="21" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Preview</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- SIDE DRAWER (Projects) -->
+  <aside id="sideDrawer" class="side-drawer">
+    <div class="drawer-header">
+      <h2>Projects</h2>
+      <button id="closeDrawer" class="icon-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="drawer-actions">
+      <button id="newProjectBtn" class="drawer-btn primary">+ New Project</button>
+      <button id="importZipBtn" class="drawer-btn">Import ZIP</button>
+    </div>
+    <div id="projectList" class="project-list"></div>
+    <div class="drawer-section-title">File Actions</div>
+    <div class="drawer-actions">
+      <button id="uploadFileBtn" class="drawer-btn">Upload File</button>
+      <button id="exportZipBtn" class="drawer-btn">Export ZIP</button>
+    </div>
+    <input type="file" id="fileUploadInput" accept=".html,.css,.js,.zip" multiple style="display:none" />
+    <input type="file" id="zipImportInput" accept=".zip" style="display:none" />
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+  </aside>
+
+  <!-- MAIN WORKSPACE -->
+  <div id="workspace">
+
+    <!-- EDITOR PANEL -->
+    <div id="editorPanel">
+
+      <!-- FILE TABS (rendered dynamically by editor.js) -->
+      <div id="fileTabs"></div>
+
+      <!-- EDITOR ACTION TOOLBAR -->
+      <div id="editorToolbar">
+        <!-- Undo -->
+        <button class="toolbar-btn" id="tbUndo" title="Undo (Ctrl+Z)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 7v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Undo
+        </button>
+        <!-- Redo -->
+        <button class="toolbar-btn" id="tbRedo" title="Redo (Ctrl+Y)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M21 7v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 17a9 9 0 019-9 9 9 0 016 2.3L21 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Redo
+        </button>
+
+        <div class="toolbar-sep"></div>
+
+        <!-- Select All -->
+        <button class="toolbar-btn" id="tbSelectAll" title="Select All (Ctrl+A)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Select All
+        </button>
+
+        <div class="toolbar-sep"></div>
+
+        <!-- Upload Files -->
+        <button class="toolbar-btn accent" id="tbUpload" title="Upload files">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="17,8 12,3 7,8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Upload
+        </button>
+
+        <div class="toolbar-sep"></div>
+
+        <!-- Download dropdown -->
+        <div class="toolbar-download-wrap">
+          <button class="toolbar-btn" id="tbDownload" title="Download current file">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Download
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><polyline points="6,9 12,15 18,9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="download-menu hidden" id="downloadMenu">
+            <button class="download-menu-item" data-dl="html">
+              <span class="dm-dot" style="background:#e44d26"></span>index.html
+            </button>
+            <button class="download-menu-item" data-dl="css">
+              <span class="dm-dot" style="background:#264de4"></span>style.css
+            </button>
+            <button class="download-menu-item" data-dl="js">
+              <span class="dm-dot" style="background:#f0db4f;outline:1px solid #ccc;outline-offset:-1px"></span>script.js
+            </button>
+          </div>
+        </div>
+
+        <div class=toolbar-sep></div>
+
+        <!-- Find & Replace -->
+        <button class="toolbar-btn" id="tbFind" title="Find & Replace (Ctrl+H)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Find
+        </button>
+      </div>
+
+      <!-- FIND & REPLACE PANEL -->
+      <div id="findReplacePanel">
+        <div class="fr-inner">
+          <!-- Row 1: Find -->
+          <div class="fr-row">
+            <div class="fr-input-wrap">
+              <input class="fr-input" id="frFind" type="text" placeholder="Find…" autocomplete="off" spellcheck="false" />
+              <span class="fr-match-count" id="frMatchCount"></span>
+            </div>
+            <div class="fr-nav">
+              <button class="fr-btn" id="frPrev" title="Previous match (Shift+Enter)">&#8593;</button>
+              <button class="fr-btn" id="frNext" title="Next match (Enter)">&#8595;</button>
+            </div>
+            <button class="fr-btn" id="frCaseSensitive" title="Case sensitive (Alt+C)">Aa</button>
+            <button class="fr-btn" id="frRegex" title="Use regex (Alt+R)">.*</button>
+            <button class="fr-btn" id="frWholeWord" title="Whole word (Alt+W)">W</button>
+            <button class="fr-btn fr-close" id="frClose" title="Close (Esc)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+          <!-- Row 2: Replace -->
+          <div class="fr-row">
+            <div class="fr-input-wrap">
+              <input class="fr-input" id="frReplace" type="text" placeholder="Replace with…" autocomplete="off" spellcheck="false" />
+            </div>
+            <button class="fr-btn accent-action" id="frReplaceOne" title="Replace current (Ctrl+Shift+H)">Replace</button>
+            <button class="fr-btn danger-action" id="frReplaceAll" title="Replace all">All</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- EDITOR AREA (panes rendered dynamically by editor.js) -->
+      <div id="editorArea"></div>
+
+      <!-- EDITOR STATUS BAR -->
+      <div id="editorStatus">
+        <span id="statusLang">HTML</span>
+        <span id="statusCursor">Ln 1, Col 1</span>
+        <span id="saveStatus"></span>
+      </div>
+    </div>
+
+    <!-- RESIZE HANDLE (desktop) -->
+    <div id="resizeHandle" title="Drag to resize"></div>
+
+    <!-- PREVIEW PANEL -->
+    <div id="previewPanel">
+
+      <!-- PREVIEW TOOLBAR -->
+      <div id="previewToolbar">
+        <div class="device-btns">
+          <button class="device-btn active" data-device="desktop" title="Desktop (1440px)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>
+          <button class="device-btn" data-device="tablet" title="Tablet (768px)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="18.5" r="0.8" fill="currentColor"/></svg>
+          </button>
+          <button class="device-btn" data-device="mobile" title="Mobile (390px)">
+            <svg width="14" height="16" viewBox="0 0 24 24" fill="none"><rect x="5" y="2" width="14" height="20" rx="3" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="18.5" r="0.8" fill="currentColor"/></svg>
+          </button>
+        </div>
+        <span class="preview-label" id="previewSizeLabel">Desktop</span>
+        <div class="preview-controls">
+          <button id="refreshPreview" class="icon-btn" title="Refresh preview">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><polyline points="23 4 23 10 17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button id="consoleToggle" class="icon-btn" title="Toggle console">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><polyline points="4 17 10 11 4 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="19" x2="20" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <span id="consoleBadge" class="console-badge hidden">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- BROWSER-STYLE ADDRESS BAR -->
+      <div id="previewAddressBar">
+        <button id="navBack" class="nav-icon-btn" title="Back">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button id="navForward" class="nav-icon-btn" title="Forward">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button id="navReload" class="nav-icon-btn" title="Reload">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="23 4 23 10 17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button id="navHome" class="nav-icon-btn" title="Home (index.html)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M3 11l9-8 9 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10v10h14V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="url-input-wrap">
+          <svg class="url-lock" width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="4" y="11" width="16" height="10" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 11V7a4 4 0 018 0v4" stroke="currentColor" stroke-width="2"/></svg>
+          <input id="previewUrlBar" type="text" spellcheck="false" autocomplete="off"
+                 placeholder="index.html" value="index.html" aria-label="Preview address bar" />
+        </div>
+      </div>
+
+      <!-- PREVIEW VIEWPORT WRAPPER -->
+      <div id="previewViewport">
+        <div id="previewFrame">
+          <iframe
+            id="preview"
+            sandbox="allow-scripts allow-modals allow-forms allow-popups allow-same-origin"
+            title="Preview"
+            aria-label="Live preview"
+          ></iframe>
+        </div>
+      </div>
+
+      <!-- CONSOLE PANEL -->
+      <div id="consolePanel" class="hidden">
+        <div class="console-header">
+          <span>Console</span>
+          <div class="console-controls">
+            <button id="clearConsole" class="console-btn">Clear</button>
+          </div>
+        </div>
+        <div id="consoleOutput"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MOBILE BOTTOM BAR -->
+  <nav id="mobileNav">
+    <button class="nav-btn active" data-view="editor">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><polyline points="16 18 22 12 16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="8 6 2 12 8 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Editor</span>
+    </button>
+    <button class="nav-btn" data-view="preview">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span>Preview</span>
+    </button>
+    <button class="nav-btn" data-view="console">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><polyline points="4 17 10 11 4 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="19" x2="20" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span>Console</span>
+    </button>
+    <button class="nav-btn" data-view="projects" id="mobileProjectsBtn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Projects</span>
+    </button>
+  </nav>
+
+</div><!-- /#app -->
+
+<!-- ===== MODALS ===== -->
+<div id="modalOverlay" class="modal-overlay hidden">
+  <div id="modal" class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Modal</h3>
+      <button id="modalClose" class="icon-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div id="modalBody"></div>
+    <div class="modal-footer">
+      <button id="modalCancel" class="btn-ghost">Cancel</button>
+      <button id="modalConfirm" class="btn-primary">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCRIPTS ===== -->
+
+<!-- CodeMirror Core -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+
+<!-- CodeMirror Modes -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+
+<!-- CodeMirror Addons -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closetag.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/comment/comment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/brace-fold.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/xml-fold.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.css" />
+
+<!-- JSZip for project export/import -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<!-- App modules -->
+<script src="storage.js"></script>
+<script src="editor.js"></script>
+<script src="preview.js"></script>
+<script src="zip.js"></script>
+<script src="inspector.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
