@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lite Tube</title>
+<meta name="theme-color" content="#0f0f0f">
+<meta name="description" content="A tiny, fast YouTube-style video browser for old phones.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lite Tube">
+<style>
+  :root{
+    --bg:#0f0f0f;
+    --bg-raised:#181818;
+    --bg-input:#222222;
+    --text:#f1f1f1;
+    --text-dim:#aaaaaa;
+    --accent:#e63946;
+    --accent-dim:#8f2530;
+    --border:#2a2a2a;
+    --radius:10px;
+    --safe-top:env(safe-area-inset-top,0px);
+    --safe-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;height:100%;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    overscroll-behavior-y:none;}
+  body{display:flex;flex-direction:column;min-height:100dvh;}
+  a{color:inherit;text-decoration:none;}
+  img{-webkit-user-drag:none;user-select:none;}
+
+  /* Header */
+  header{
+    position:sticky;top:0;z-index:20;
+    background:rgba(15,15,15,.92);backdrop-filter:blur(8px);
+    padding:calc(8px + var(--safe-top)) 12px 8px;
+    display:flex;align-items:center;gap:10px;
+    border-bottom:1px solid var(--border);
+  }
+  .logo{display:flex;align-items:center;gap:6px;font-weight:700;font-size:16px;flex-shrink:0;white-space:nowrap;}
+  .logo .play{
+    width:22px;height:16px;background:var(--accent);border-radius:5px;position:relative;flex-shrink:0;
+  }
+  .logo .play::after{
+    content:"";position:absolute;left:8px;top:50%;transform:translateY(-50%);
+    border-style:solid;border-width:4px 0 4px 7px;border-color:transparent transparent transparent #fff;
+  }
+  form.search{flex:1;display:flex;background:var(--bg-input);border:1px solid var(--border);border-radius:20px;overflow:hidden;}
+  form.search input{
+    flex:1;border:0;background:transparent;color:var(--text);padding:9px 14px;font-size:14px;min-width:0;outline:none;
+  }
+  form.search button{
+    border:0;background:transparent;color:var(--text-dim);padding:0 12px;cursor:pointer;font-size:15px;
+  }
+  #settingsBtn{
+    background:transparent;border:0;color:var(--text-dim);font-size:18px;cursor:pointer;flex-shrink:0;padding:4px 6px;
+  }
+
+  /* Tabs */
+  .tabs{display:flex;gap:8px;padding:8px 12px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--border);}
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{
+    flex-shrink:0;padding:6px 14px;border-radius:16px;background:var(--bg-raised);
+    color:var(--text-dim);font-size:13px;border:1px solid var(--border);cursor:pointer;white-space:nowrap;
+  }
+  .tab.active{background:var(--text);color:#000;border-color:var(--text);font-weight:600;}
+
+  main{flex:1;padding-bottom:calc(16px + var(--safe-bottom));}
+
+  #status{padding:40px 20px;text-align:center;color:var(--text-dim);font-size:14px;line-height:1.6;}
+  #status a{color:var(--accent);}
+  .spinner{
+    width:26px;height:26px;border:3px solid var(--border);border-top-color:var(--accent);
+    border-radius:50%;margin:0 auto 12px;animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* Video grid */
+  #grid{display:flex;flex-direction:column;}
+  .card{
+    display:flex;flex-direction:column;cursor:pointer;border-bottom:1px solid var(--border);
+    padding-bottom:12px;margin-bottom:12px;
+  }
+  .thumb-wrap{position:relative;width:100%;aspect-ratio:16/9;background:var(--bg-raised);overflow:hidden;}
+  .thumb-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+  .duration{
+    position:absolute;right:6px;bottom:6px;background:rgba(0,0,0,.8);color:#fff;
+    font-size:11px;padding:2px 5px;border-radius:4px;font-variant-numeric:tabular-nums;
+  }
+  .meta{display:flex;gap:10px;padding:10px 12px 0;}
+  .avatar{width:36px;height:36px;border-radius:50%;background:var(--bg-raised);flex-shrink:0;object-fit:cover;}
+  .info{min-width:0;}
+  .title{font-size:14.5px;font-weight:600;line-height:1.35;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .sub{font-size:12.5px;color:var(--text-dim);margin-top:4px;
+    display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;}
+
+  /* Player overlay */
+  #player{
+    position:fixed;inset:0;background:#000;z-index:100;display:none;flex-direction:column;
+  }
+  #player.open{display:flex;}
+  .player-frame-wrap{position:relative;width:100%;aspect-ratio:16/9;background:#000;flex-shrink:0;}
+  .player-frame-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+  #closePlayer{
+    position:absolute;top:calc(8px + var(--safe-top));right:8px;z-index:5;
+    background:rgba(0,0,0,.55);color:#fff;border:0;width:34px;height:34px;border-radius:50%;
+    font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  }
+  .player-details{padding:14px 16px;overflow-y:auto;flex:1;}
+  .player-details h2{font-size:16px;margin:0 0 8px;line-height:1.4;}
+  .player-details .channel{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:10px;}
+  .player-details .channel img{width:38px;height:38px;border-radius:50%;object-fit:cover;background:var(--bg-raised);}
+  .player-details .stats{font-size:12.5px;color:var(--text-dim);}
+  .player-details .desc{font-size:13px;color:var(--text-dim);white-space:pre-wrap;line-height:1.5;}
+
+  /* Settings modal */
+  #settingsModal{
+    position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:none;align-items:flex-end;justify-content:center;
+  }
+  #settingsModal.open{display:flex;}
+  .sheet{
+    background:var(--bg-raised);width:100%;max-width:480px;border-radius:16px 16px 0 0;
+    padding:18px 18px calc(18px + var(--safe-bottom));
+  }
+  .sheet h3{margin:0 0 4px;font-size:16px;}
+  .sheet p{color:var(--text-dim);font-size:12.5px;margin:0 0 12px;line-height:1.5;}
+  .sheet label{font-size:12px;color:var(--text-dim);display:block;margin-bottom:6px;}
+  .sheet select,.sheet input[type=text]{
+    width:100%;background:var(--bg-input);border:1px solid var(--border);color:var(--text);
+    padding:10px;border-radius:8px;font-size:14px;margin-bottom:12px;
+  }
+  .sheet .row{display:flex;gap:10px;}
+  .sheet button.primary{
+    background:var(--accent);color:#fff;border:0;padding:11px;border-radius:8px;font-size:14px;font-weight:600;
+    flex:1;cursor:pointer;
+  }
+  .sheet button.secondary{
+    background:transparent;color:var(--text-dim);border:1px solid var(--border);padding:11px;border-radius:8px;
+    font-size:14px;flex:1;cursor:pointer;
+  }
+  #installRow{display:none;margin-top:10px;}
+
+  @media(min-width:640px){
+    #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;padding:12px;}
+    .card{margin-bottom:0;border-bottom:0;padding-bottom:0;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><span class="play"></span>Lite Tube</div>
+  <form class="search" id="searchForm">
+    <input id="searchInput" type="text" inputmode="search" placeholder="Search videos" autocomplete="off">
+    <button type="submit" aria-label="Search">&#128269;</button>
+  </form>
+  <button id="settingsBtn" aria-label="Settings">&#9881;</button>
+</header>
+
+<div class="tabs" id="tabs">
+  <div class="tab active" data-tab="trending">Trending</div>
+  <div class="tab" data-tab="music">Music</div>
+  <div class="tab" data-tab="gaming">Gaming</div>
+  <div class="tab" data-tab="news">News</div>
+  <div class="tab" data-tab="movies">Movies</div>
+</div>
+
+<main>
+  <div id="status"></div>
+  <div id="grid"></div>
+</main>
+
+<div id="player">
+  <div class="player-frame-wrap">
+    <button id="closePlayer" aria-label="Close">&#10005;</button>
+    <iframe id="playerFrame" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+  </div>
+  <div class="player-details" id="playerDetails"></div>
+</div>
+
+<div id="settingsModal">
+  <div class="sheet">
+    <h3>Settings</h3>
+    <p>Lite Tube fetches video listings through a public Piped API instance and plays videos using YouTube's own official embedded player. If search stops working, switch instances below.</p>
+    <label for="instanceSelect">API instance</label>
+    <select id="instanceSelect"></select>
+    <label for="customInstance">Or enter a custom instance URL</label>
+    <input type="text" id="customInstance" placeholder="https://your-instance.example">
+    <div id="installRow">
+      <button class="primary" id="installBtn" style="width:100%;margin-bottom:10px;">Install app to home screen</button>
+    </div>
+    <div class="row">
+      <button class="secondary" id="closeSettings">Close</button>
+      <button class="primary" id="saveSettings">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- Config ---------- */
+  var DEFAULT_INSTANCES = [
+    "https://pipedapi.kavin.rocks",
+    "https://api.piped.yt",
+    "https://pipedapi.adminforge.de",
+    "https://piped-api.lunar.icu",
+    "https://pipedapi.leptons.xyz"
+  ];
+  var LS_INSTANCE = "litetube_instance";
+  var LS_HISTORY = "litetube_history";
+
+  function getInstance(){
+    return localStorage.getItem(LS_INSTANCE) || DEFAULT_INSTANCES[0];
+  }
+  function setInstance(url){
+    localStorage.setItem(LS_INSTANCE, url.replace(/\/$/, ""));
+  }
+
+  /* ---------- Elements ---------- */
+  var $status = document.getElementById("status");
+  var $grid = document.getElementById("grid");
+  var $searchForm = document.getElementById("searchForm");
+  var $searchInput = document.getElementById("searchInput");
+  var $tabs = document.getElementById("tabs");
+  var $player = document.getElementById("player");
+  var $playerFrame = document.getElementById("playerFrame");
+  var $playerDetails = document.getElementById("playerDetails");
+  var $closePlayer = document.getElementById("closePlayer");
+  var $settingsBtn = document.getElementById("settingsBtn");
+  var $settingsModal = document.getElementById("settingsModal");
+  var $closeSettings = document.getElementById("closeSettings");
+  var $saveSettings = document.getElementById("saveSettings");
+  var $instanceSelect = document.getElementById("instanceSelect");
+  var $customInstance = document.getElementById("customInstance");
+  var $installBtn = document.getElementById("installBtn");
+  var $installRow = document.getElementById("installRow");
+
+  var currentTab = "trending";
+  var currentQuery = "";
+  var requestToken = 0;
+
+  /* ---------- Utilities ---------- */
+  function fmtCount(n){
+    if(n == null || n < 0) return "";
+    if(n >= 1e9) return (n/1e9).toFixed(1).replace(/\.0$/,"") + "B";
+    if(n >= 1e6) return (n/1e6).toFixed(1).replace(/\.0$/,"") + "M";
+    if(n >= 1e3) return (n/1e3).toFixed(1).replace(/\.0$/,"") + "K";
+    return String(n);
+  }
+  function fmtDuration(sec){
+    if(sec == null || sec < 0) return "";
+    sec = Math.floor(sec);
+    var h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60), s = sec%60;
+    var pad = function(x){return x<10?"0"+x:String(x);};
+    return h>0 ? (h+":"+pad(m)+":"+pad(s)) : (m+":"+pad(s));
+  }
+  function timeAgo(iso){
+    if(!iso) return "";
+    var d = new Date(iso);
+    if(isNaN(d)) return "";
+    var diff = (Date.now() - d.getTime())/1000;
+    var units = [["year",31536000],["month",2592000],["week",604800],["day",86400],["hour",3600],["minute",60]];
+    for(var i=0;i<units.length;i++){
+      var v = Math.floor(diff/units[i][1]);
+      if(v >= 1) return v + " " + units[i][0] + (v>1?"s":"") + " ago";
+    }
+    return "just now";
+  }
+  function extractId(idOrUrl){
+    if(!idOrUrl) return "";
+    var m = idOrUrl.match(/[?&]v=([^&]+)/) || idOrUrl.match(/\/watch\?v=([^&]+)/) || idOrUrl.match(/\/(?:embed|shorts)\/([^/?]+)/);
+    if(m) return m[1];
+    return idOrUrl.replace("/watch?v=", "");
+  }
+  function escapeHtml(str){
+    var div = document.createElement("div");
+    div.textContent = str || "";
+    return div.innerHTML;
+  }
+
+  /* ---------- Fetching ---------- */
+  function apiFetch(path){
+    var base = getInstance();
+    return fetch(base + path, {mode:"cors"}).then(function(r){
+      if(!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    });
+  }
+
+  function showStatus(html){
+    $status.innerHTML = html;
+    $status.style.display = "block";
+  }
+  function hideStatus(){
+    $status.style.display = "none";
+    $status.innerHTML = "";
+  }
+  function showLoading(){
+    showStatus('<div class="spinner"></div>Loading&hellip;');
+  }
+  function showError(msg){
+    showStatus(
+      escapeHtml(msg) +
+      '<br><br>Try a different API instance in Settings (&#9881; top right) &mdash; public instances go down sometimes.'
+    );
+  }
+
+  function load(){
+    var token = ++requestToken;
+    $grid.innerHTML = "";
+    showLoading();
+
+    var path;
+    if(currentQuery){
+      path = "/search?q=" + encodeURIComponent(currentQuery) + "&filter=videos";
+    } else if(currentTab === "trending"){
+      path = "/trending?region=US";
+    } else {
+      path = "/search?q=" + encodeURIComponent(currentTab) + "&filter=videos";
+    }
+
+    apiFetch(path).then(function(data){
+      if(token !== requestToken) return;
+      var items = Array.isArray(data) ? data : (data.items || []);
+      items = items.filter(function(it){
+        return it && (it.type === "stream" || it.type === undefined) && (it.url || it.videoId) && it.title;
+      });
+      if(items.length === 0){
+        showError("No videos found.");
+        return;
+      }
+      hideStatus();
+      renderGrid(items);
+    }).catch(function(err){
+      if(token !== requestToken) return;
+      showError("Couldn't load videos (" + err.message + ").");
+    });
+  }
+
+  function renderGrid(items){
+    var frag = document.createDocumentFragment();
+    items.forEach(function(it){
+      var vid = extractId(it.url || it.videoId);
+      if(!vid) return;
+      var thumb = it.thumbnail || ("https://i.ytimg.com/vi/" + vid + "/hqdefault.jpg");
+      var card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML =
+        '<div class="thumb-wrap">' +
+          '<img loading="lazy" src="' + escapeHtml(thumb) + '" alt="">' +
+          (it.duration > 0 ? '<span class="duration">' + fmtDuration(it.duration) + '</span>' : '') +
+        '</div>' +
+        '<div class="meta">' +
+          '<img class="avatar" loading="lazy" src="' + escapeHtml(it.uploaderAvatar || "") + '" alt="">' +
+          '<div class="info">' +
+            '<div class="title">' + escapeHtml(it.title) + '</div>' +
+            '<div class="sub">' + escapeHtml(it.uploaderName || it.uploader || "") + ' &middot; ' +
+              (it.views != null ? fmtCount(it.views) + " views" : "") +
+              (it.uploadedDate ? ' &middot; ' + escapeHtml(it.uploadedDate) : (it.uploaded ? ' &middot; ' + timeAgo(new Date(it.uploaded).toISOString()) : '')) +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      card.addEventListener("click", function(){
+        openPlayer(vid, it);
+      });
+      frag.appendChild(card);
+    });
+    $grid.appendChild(frag);
+  }
+
+  /* ---------- Player ---------- */
+  function openPlayer(videoId, meta){
+    $playerFrame.src = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(videoId) +
+      "?autoplay=1&playsinline=1&rel=0";
+    $playerDetails.innerHTML =
+      '<h2>' + escapeHtml(meta && meta.title || "") + '</h2>' +
+      '<div class="stats">' + (meta && meta.views != null ? fmtCount(meta.views) + " views" : "") + '</div>' +
+      '<div class="channel">' +
+        '<img src="' + escapeHtml(meta && (meta.uploaderAvatar||"") || "") + '" alt="">' +
+        '<div>' + escapeHtml(meta && (meta.uploaderName || meta.uploader || "") || "") + '</div>' +
+      '</div>' +
+      '<div class="desc">' + escapeHtml(meta && meta.shortDescription || "") + '</div>';
+    $player.classList.add("open");
+    document.body.style.overflow = "hidden";
+    saveHistory(videoId, meta);
+  }
+  function closePlayerFn(){
+    $player.classList.remove("open");
+    $playerFrame.src = "";
+    document.body.style.overflow = "";
+  }
+  $closePlayer.addEventListener("click", closePlayerFn);
+
+  function saveHistory(videoId, meta){
+    try{
+      var hist = JSON.parse(localStorage.getItem(LS_HISTORY) || "[]");
+      hist = hist.filter(function(h){return h.id !== videoId;});
+      hist.unshift({id:videoId, title: meta && meta.title, ts: Date.now()});
+      hist = hist.slice(0, 50);
+      localStorage.setItem(LS_HISTORY, JSON.stringify(hist));
+    }catch(e){}
+  }
+
+  /* ---------- Search & tabs ---------- */
+  $searchForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    currentQuery = $searchInput.value.trim();
+    Array.prototype.forEach.call($tabs.children, function(t){ t.classList.remove("active"); });
+    load();
+  });
+
+  $tabs.addEventListener("click", function(e){
+    var tab = e.target.closest(".tab");
+    if(!tab) return;
+    currentQuery = "";
+    $searchInput.value = "";
+    Array.prototype.forEach.call($tabs.children, function(t){ t.classList.remove("active"); });
+    tab.classList.add("active");
+    currentTab = tab.dataset.tab;
+    load();
+  });
+
+  /* ---------- Settings ---------- */
+  function populateInstances(){
+    $instanceSelect.innerHTML = "";
+    var current = getInstance();
+    var list = DEFAULT_INSTANCES.slice();
+    if(list.indexOf(current) === -1) list.unshift(current);
+    list.forEach(function(url){
+      var opt = document.createElement("option");
+      opt.value = url; opt.textContent = url;
+      if(url === current) opt.selected = true;
+      $instanceSelect.appendChild(opt);
+    });
+  }
+  $settingsBtn.addEventListener("click", function(){
+    populateInstances();
+    $customInstance.value = "";
+    $settingsModal.classList.add("open");
+  });
+  $closeSettings.addEventListener("click", function(){
+    $settingsModal.classList.remove("open");
+  });
+  $saveSettings.addEventListener("click", function(){
+    var custom = $customInstance.value.trim();
+    var chosen = custom || $instanceSelect.value;
+    if(chosen){
+      setInstance(chosen);
+      $settingsModal.classList.remove("open");
+      load();
+    }
+  });
+
+  /* ---------- PWA install ---------- */
+  var deferredPrompt = null;
+  window.addEventListener("beforeinstallprompt", function(e){
+    e.preventDefault();
+    deferredPrompt = e;
+    $installRow.style.display = "block";
+  });
+  $installBtn.addEventListener("click", function(){
+    if(!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.finally(function(){
+      deferredPrompt = null;
+      $installRow.style.display = "none";
+    });
+  });
+
+  /* ---------- Service worker ---------- */
+  if("serviceWorker" in navigator){
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("sw.js").catch(function(){});
+    });
+  }
+
+  /* ---------- Init ---------- */
+  load();
+})();
+</script>
+</body>
+</html>
