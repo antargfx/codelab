@@ -1,0 +1,64 @@
+/* ==========================================================================
+   print.css — Print-only styles. Loaded with media="print".
+   Hides chrome (sidebar, nav, buttons) and prints only the report table.
+   ========================================================================== */
+
+@media print {
+  /* Reset page background/colors for ink-friendly output. */
+  body { background: #fff !important; color: #000 !important; }
+
+  /* Hide app chrome. */
+  .sidebar,
+  .topnav,
+  .no-print,
+  .toolbar,
+  .tabs,
+  .export-bar,
+  .page-head,
+  .quick-actions,
+  #toast-container,
+  #global-spinner { display: none !important; }
+
+  /* Flatten the layout so content takes the full page. */
+  .layout { display: block !important; }
+  .main-area { display: block !important; }
+  .content { padding: 0 !important; }
+
+  .report-area,
+  .card,
+  .table-card {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  /* Ensure the report header prints. */
+  .report-header { text-align: center; margin-bottom: 12px; }
+  .report-institute { font-size: 16pt; font-weight: 800; }
+  .report-title { font-size: 13pt; }
+  .report-meta { font-size: 9pt; }
+
+  /* Tables: force borders and avoid row breaks. */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 8pt; }
+  .data-table th,
+  .data-table td {
+    border: 1px solid #888 !important;
+    padding: 3px 5px !important;
+    color: #000 !important;
+    background: #fff !important;
+    white-space: nowrap;
+  }
+  .data-table thead th {
+    background: #e5e7eb !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  tr, td, th { page-break-inside: avoid; }
+
+  /* Keep status colors readable in print via bold text (color may drop). */
+  .cell-present, .cell-absent, .cell-late, .cell-leave, .cell-pct { font-weight: 700; }
+
+  .report-foot { font-size: 7pt; color: #333 !important; margin-top: 8px; }
+
+  @page { margin: 12mm; }
+}
