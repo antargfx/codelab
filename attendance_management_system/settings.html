@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2563eb" />
+    <title>Settings · Attendance System</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="assets/logo.png" />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/print.css" media="print" />
+  </head>
+  <body>
+    <div id="app-shell"></div>
+
+    <main>
+      <div class="page-head">
+        <h2 class="page-title-lg">Settings</h2>
+      </div>
+
+      <!-- General institute settings -->
+      <section class="card settings-card">
+        <h3 class="section-title">Institute</h3>
+        <form id="general-form" class="settings-grid" novalidate>
+          <label class="field">
+            <span class="field-label">Institute Name</span>
+            <input type="text" id="s-name" />
+          </label>
+          <label class="field">
+            <span class="field-label">Current Batch</span>
+            <select id="s-current-batch"></select>
+          </label>
+          <label class="field">
+            <span class="field-label">Course Duration (months)</span>
+            <input type="number" id="s-duration" min="1" max="24" />
+          </label>
+          <label class="field">
+            <span class="field-label">Theme</span>
+            <select id="s-theme">
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </label>
+          <div class="field field-logo">
+            <span class="field-label">Logo</span>
+            <div class="logo-row">
+              <img id="logo-preview" class="logo-preview" alt="Logo preview" />
+              <div class="logo-controls">
+                <input type="file" id="s-logo" accept="image/*" />
+                <button type="button" class="btn btn-ghost" id="logo-clear">Remove logo</button>
+                <span class="field-hint">Stored as compressed Base64 in Firestore (no Firebase Storage needed).</span>
+              </div>
+            </div>
+          </div>
+          <div class="settings-actions">
+            <button type="submit" class="btn btn-primary">Save Institute Settings</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Batches & labs -->
+      <section class="card settings-card">
+        <div class="card-head-row">
+          <h3 class="section-title">Batches &amp; Labs</h3>
+          <button class="btn btn-primary" id="add-batch-btn" type="button">＋ New Batch</button>
+        </div>
+        <div id="batches-list" class="batches-list"></div>
+      </section>
+
+      <!-- Trainers (admin only) -->
+      <section class="card settings-card" id="trainers-section">
+        <div class="card-head-row">
+          <h3 class="section-title">Trainers &amp; Admins</h3>
+          <button class="btn btn-primary" id="add-trainer-btn" type="button">＋ New Trainer</button>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table" id="trainers-table">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Role</th>
+                <th scope="col">Assigned Batches</th>
+                <th scope="col">Status</th>
+                <th scope="col" class="actions-col">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="trainers-body">
+              <tr><td colspan="6" class="cell-muted">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="js/settings.js"></script>
+  </body>
+</html>
