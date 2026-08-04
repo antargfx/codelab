@@ -1,0 +1,102 @@
+rules_version = '2';
+
+// =============================================================================
+// Firestore Security Rules — Attendance Management System
+// =============================================================================
+//
+// These rules are the REAL security boundary. Client-side redirects are only a
+// UX nicety; anyone can call Firestore directly, so all protection lives here.
+//
+// Model:
+//  - Any signed-in user can READ batch/lab/student structure and attendance
+//    (needed to view dashboards and reports).
+//  - Only admins can write batches, labs, settings, or change a user's role.
+//  - Trainers can write students + attendance ONLY for batches in their own
+//    assignedBatches list.
+//  - A user can read their own users/{uid} doc (to check their role) but can
+//    NEVER write it — this stops a trainer promoting themselves to admin.
+//
+// TEST THIS in the Firestore Rules Playground or the local emulator before
+// relying on it in production.
+// =============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function me() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && me().role == 'admin';
+    }
+
+    function isMyBatch(batchId) {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && me().role == 'trainer'
+        && (me().assignedBatches is list)
+        && (batchId in me().assignedBatches);
+    }
+
+    // --- Users ---
+    // Read: own doc, or any doc if admin. Write: admin only (prevents
+    // self-promotion by trainers editing their own role).
+    match /users/{uid} {
+      allow read: if isSignedIn() && (request.auth.uid == uid || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    // --- Batches (and nested labs + students) ---
+    match /batches/{batchId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+
+      // Labs: structure managed by admins.
+      match /labs/{labId} {
+        allow read: if isSignedIn();
+        allow write: if isAdmin();
+
+        // Students: admins anywhere; trainers only in their assigned batches.
+        match /students/{studentId} {
+          allow read: if isSignedIn();
+          allow write: if isAdmin() || isMyBatch(batchId);
+        }
+      }
+    }
+
+    // --- Attendance day-documents ---
+    // Path: attendance/{batchId}/labs/{labId}/days/{date}
+    match /attendance/{batchId}/labs/{labId}/days/{date} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin() || isMyBatch(batchId);
+    }
+
+    // --- Settings ---
+    match /settings/{doc} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // --- Activity log ---
+    // Any signed-in user can append (create) a log entry; only admins can read;
+    // nobody can update or delete (immutable audit trail).
+    match /activityLog/{logId} {
+      allow read: if isAdmin();
+      allow create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    // Default deny for anything not matched above.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
