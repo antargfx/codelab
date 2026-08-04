@@ -1,0 +1,13 @@
+{
+  "//": "Composite indexes for attendance range queries. The Monthly and 3-Month reports query one lab's days collection filtered by a date range and ordered by date. Firestore may ask you to create this index the first time the query runs in development — this file lets you deploy it via the Firebase CLI (firebase deploy --only firestore:indexes) instead of clicking through the console.",
+  "indexes": [
+    {
+      "collectionGroup": "days",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "date", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
