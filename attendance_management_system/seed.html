@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seed Demo Data · Attendance System</title>
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body class="auth-body">
+    <main class="auth-wrap" style="max-width: 560px">
+      <section class="auth-card">
+        <h1 class="auth-title">Seed Demo Data</h1>
+        <p class="auth-sub">
+          One-time setup. You must be signed in as the bootstrap admin.
+        </p>
+
+        <div class="card" style="margin: 16px 0; background: var(--surface-2)">
+          <p id="seed-auth-status" class="field-hint">Checking sign-in…</p>
+          <p class="field-hint">
+            Not signed in? <a href="login.html">Go to login</a>, sign in as the
+            admin, then come back here.
+          </p>
+        </div>
+
+        <div class="modal-actions" style="justify-content: flex-start">
+          <button class="btn btn-primary" id="run-seed-btn" type="button">
+            ▶ Run Seed
+          </button>
+          <a class="btn btn-ghost" href="dashboard.html">Go to Dashboard</a>
+        </div>
+
+        <div
+          id="seed-log"
+          style="
+            margin-top: 16px;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--r-md);
+            padding: 12px;
+            max-height: 320px;
+            overflow: auto;
+          "
+        ></div>
+      </section>
+    </main>
+
+    <script type="module" src="js/seed.js"></script>
+  </body>
+</html>
