@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2563eb" />
+    <title>Students · Attendance System</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="assets/logo.png" />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/print.css" media="print" />
+    <!-- SheetJS for Excel import/export -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  </head>
+  <body>
+    <div id="app-shell"></div>
+
+    <main>
+      <div class="page-head">
+        <h2 class="page-title-lg">Students</h2>
+        <div class="page-head-controls">
+          <button class="btn btn-ghost" id="import-btn" type="button">⬆ Import Excel</button>
+          <button class="btn btn-ghost" id="template-btn" type="button">📄 Template</button>
+          <button class="btn btn-primary" id="add-btn" type="button">＋ Add Student</button>
+          <input type="file" id="import-file" accept=".xlsx,.xls" hidden />
+        </div>
+      </div>
+
+      <section class="toolbar card">
+        <label class="field inline">
+          <span class="field-label">Batch</span>
+          <select id="batch-select" aria-label="Select batch"></select>
+        </label>
+        <label class="field inline">
+          <span class="field-label">Lab</span>
+          <select id="lab-select" aria-label="Select lab"></select>
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" id="show-inactive" />
+          <span>Show inactive</span>
+        </label>
+        <div class="toolbar-spacer"></div>
+        <input
+          type="search"
+          id="search-input"
+          class="search-input"
+          placeholder="Search name or roll…"
+          aria-label="Search students"
+        />
+      </section>
+
+      <section class="card table-card">
+        <div class="table-wrapper">
+          <table class="data-table" id="students-table">
+            <thead>
+              <tr>
+                <th scope="col">Roll</th>
+                <th scope="col">Name</th>
+                <th scope="col">Phone</th>
+                <th scope="col">Status</th>
+                <th scope="col" class="actions-col">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="students-body">
+              <tr><td colspan="5" class="cell-muted">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="js/students.js"></script>
+  </body>
+</html>
