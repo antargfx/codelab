@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attendance System</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="assets/logo.png" />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <!-- Entry point: routes to dashboard if signed in, else to login. -->
+    <div class="splash">
+      <div class="spinner"></div>
+      <p>Loading Attendance System…</p>
+    </div>
+
+    <script type="module">
+      import { auth } from "./js/firebase.js";
+      import { applyTheme } from "./js/utils.js";
+      import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+      applyTheme();
+
+      // Register the service worker (PWA). Relative scope for GitHub Pages sub-paths.
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("service-worker.js")
+            .catch((err) => console.warn("SW registration failed:", err));
+        });
+      }
+
+      onAuthStateChanged(auth, (user) => {
+        window.location.replace(user ? "dashboard.html" : "login.html");
+      });
+    </script>
+  </body>
+</html>
