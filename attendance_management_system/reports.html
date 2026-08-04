@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2563eb" />
+    <title>Reports · Attendance System</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="assets/logo.png" />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/print.css" media="print" />
+    <!-- xlsx-js-style: SheetJS-compatible fork WITH border/fill/font styling -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+    <!-- jsPDF + AutoTable for PDF export -->
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+  </head>
+  <body>
+    <div id="app-shell"></div>
+
+    <main>
+      <div class="page-head no-print">
+        <h2 class="page-title-lg">Reports</h2>
+      </div>
+
+      <section class="toolbar card no-print">
+        <label class="field inline">
+          <span class="field-label">Batch</span>
+          <select id="batch-select" aria-label="Select batch"></select>
+        </label>
+        <label class="field inline">
+          <span class="field-label">Lab</span>
+          <select id="lab-select" aria-label="Select lab"></select>
+        </label>
+        <label class="field inline" id="month-field">
+          <span class="field-label">Month</span>
+          <input type="month" id="month-input" aria-label="Select month" />
+        </label>
+      </section>
+
+      <nav class="tabs no-print" role="tablist" aria-label="Report type">
+        <button class="tab active" data-view="monthly" role="tab" aria-selected="true">Monthly View</button>
+        <button class="tab" data-view="three" role="tab" aria-selected="false">3-Month Report</button>
+        <button class="tab" data-view="today" role="tab" aria-selected="false">Today's Sheet</button>
+      </nav>
+
+      <section class="export-bar card no-print" id="export-bar">
+        <span class="export-label">Export:</span>
+        <button class="btn btn-ghost" id="export-xlsx" type="button">⬇ Excel</button>
+        <button class="btn btn-ghost" id="export-pdf" type="button">⬇ PDF</button>
+        <button class="btn btn-ghost" id="export-csv" type="button">⬇ CSV</button>
+        <button class="btn btn-ghost" id="print-btn" type="button">🖨 Print</button>
+      </section>
+
+      <section class="report-area" id="report-area" aria-live="polite">
+        <div class="empty-state"><div class="empty-icon" aria-hidden="true">📊</div><p>Select filters to view a report.</p></div>
+      </section>
+    </main>
+
+    <script type="module" src="js/reports.js"></script>
+  </body>
+</html>
