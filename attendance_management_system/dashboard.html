@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2563eb" />
+    <title>Dashboard · Attendance System</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="assets/logo.png" />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/print.css" media="print" />
+  </head>
+  <body>
+    <div id="app-shell"></div>
+
+    <main>
+      <!-- Page content; moved into the shell by auth.renderShell() -->
+      <div class="page-head">
+        <h2 class="page-title-lg">Dashboard</h2>
+        <div class="page-head-controls">
+          <label class="field inline">
+            <span class="field-label">Batch</span>
+            <select id="batch-select" aria-label="Select batch"></select>
+          </label>
+        </div>
+      </div>
+
+      <section class="card-grid" id="stat-cards" aria-live="polite">
+        <!-- Stat cards injected here -->
+        <div class="stat-card skeleton" style="height: 96px"></div>
+        <div class="stat-card skeleton" style="height: 96px"></div>
+        <div class="stat-card skeleton" style="height: 96px"></div>
+        <div class="stat-card skeleton" style="height: 96px"></div>
+      </section>
+
+      <section class="section">
+        <h3 class="section-title">Quick actions</h3>
+        <div class="quick-actions" id="quick-actions"></div>
+      </section>
+
+      <section class="section">
+        <h3 class="section-title">Lab summary (today)</h3>
+        <div class="card-grid" id="lab-summary" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <script type="module" src="js/dashboard.js"></script>
+  </body>
+</html>
