@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2563eb" />
+    <title>Login · Attendance System</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="assets/logo.png" />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body class="auth-body">
+    <main class="auth-wrap">
+      <section class="auth-card" aria-labelledby="auth-title">
+        <div class="auth-brand">
+          <span class="auth-logo" aria-hidden="true">🎓</span>
+          <h1 id="auth-title" class="auth-title">Attendance System</h1>
+          <p class="auth-sub">Sign in to continue</p>
+        </div>
+
+        <form id="login-form" class="auth-form" novalidate>
+          <label class="field">
+            <span class="field-label">Email</span>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              autocomplete="username"
+              required
+              placeholder="you@institute.edu"
+            />
+          </label>
+
+          <label class="field">
+            <span class="field-label">Password</span>
+            <span class="input-with-btn">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                autocomplete="current-password"
+                required
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                id="toggle-pw"
+                class="input-btn"
+                aria-label="Show password"
+              >
+                👁
+              </button>
+            </span>
+          </label>
+
+          <label class="checkbox-row">
+            <input type="checkbox" id="remember" checked />
+            <span>Remember me on this device</span>
+          </label>
+
+          <button type="submit" class="btn btn-primary btn-block" id="login-btn">
+            Sign In
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-link btn-block"
+            id="forgot-btn"
+          >
+            Forgot password?
+          </button>
+        </form>
+
+        <p class="auth-foot">
+          No account? Accounts are created by an administrator from inside the
+          app.
+        </p>
+      </section>
+    </main>
+
+    <script type="module">
+      import { auth } from "./js/firebase.js";
+      import { signIn, sendReset } from "./js/auth.js";
+      import {
+        toast,
+        handleError,
+        showSpinner,
+        hideSpinner,
+        applyTheme,
+        $,
+      } from "./js/utils.js";
+      import {
+        onAuthStateChanged,
+        setPersistence,
+        browserLocalPersistence,
+        browserSessionPersistence,
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+      applyTheme();
+
+      // If already signed in, skip straight to the dashboard.
+      onAuthStateChanged(auth, (user) => {
+        if (user) window.location.replace("dashboard.html");
+      });
+
+      const form = $("#login-form");
+      const pwInput = $("#password");
+
+      $("#toggle-pw").addEventListener("click", () => {
+        const showing = pwInput.type === "text";
+        pwInput.type = showing ? "password" : "text";
+        $("#toggle-pw").setAttribute(
+          "aria-label",
+          showing ? "Show password" : "Hide password"
+        );
+      });
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = $("#email").value.trim();
+        const password = pwInput.value;
+        const remember = $("#remember").checked;
+
+        if (!email || !password) {
+          toast("Please enter your email and password.", "warn");
+          return;
+        }
+        showSpinner("Signing in…");
+        try {
+          // Honor the "Remember me" choice by choosing persistence before login.
+          await setPersistence(
+            auth,
+            remember ? browserLocalPersistence : browserSessionPersistence
+          );
+          await signIn(email, password);
+          window.location.replace("dashboard.html");
+        } catch (err) {
+          hideSpinner();
+          handleError(err, "login");
+        }
+      });
+
+      $("#forgot-btn").addEventListener("click", async () => {
+        const email = $("#email").value.trim();
+        if (!email) {
+          toast("Enter your email above first, then click Forgot password.", "warn", 5000);
+          return;
+        }
+        try {
+          await sendReset(email);
+          toast(
+            "Password reset email sent. Check your inbox (and spam).",
+            "success",
+            6000
+          );
+        } catch (err) {
+          handleError(err, "reset");
+        }
+      });
+    </script>
+  </body>
+</html>
