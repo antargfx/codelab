@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Photos to Drive</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 { margin-top: 0; color: #333; }
+        input[type="file"] {
+            margin: 20px 0;
+            width: 100%;
+        }
+        button {
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        button:hover { background-color: #357ae8; }
+        button:disabled { background-color: #a0c1ff; cursor: not-allowed; }
+        #status-container {
+            margin-top: 20px;
+            text-align: left;
+            font-size: 14px;
+        }
+        .success { color: green; }
+        .error { color: red; }
+        .uploading { color: orange; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Upload Photos</h2>
+    <p>Select multiple images to upload directly to Google Drive.</p>
+    
+    <input type="file" id="fileInput" multiple accept="image/*">
+    <button id="uploadBtn" onclick="uploadFiles()">Upload Files</button>
+    
+    <div id="status-container"></div>
+</div>
+
+<script>
+    // ⚠️ REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzN3XWg1iRjBvLXG4w6LS_gXWnGzET4K7wEzwDUBvXrcpizo1QcPqjJs0_SwrEHmz1_4g/exec";
+
+    async function uploadFiles() {
+        const fileInput = document.getElementById('fileInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const statusContainer = document.getElementById('status-container');
+        const files = fileInput.files;
+
+        if (files.length === 0) {
+            alert('Please select at least one photo!');
+            return;
+        }
+
+        uploadBtn.disabled = true;
+        statusContainer.innerHTML = '';
+
+        // Process uploads one by one to avoid overwhelming the script payload limits
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const statusId = `status-${i}`;
+            
+            const statusElement = document.createElement('div');
+            statusElement.id = statusId;
+            statusElement.className = 'uploading';
+            statusElement.innerText = `⏳ Uploading: ${file.name}...`;
+            statusContainer.appendChild(statusElement);
+
+            try {
+                // Convert file to base64
+                const base64Data = await getBase64(file);
+                const base64String = base64Data.split(',')[1]; // Remove data:image/... metadata
+
+                // Send POST request
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8',
+                    },
+                    redirect: 'follow', // Crucial for Google Apps Script redirects
+                    body: JSON.stringify({
+                        fileName: file.name,
+                        mimeType: file.type,
+                        fileData: base64String
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    document.getElementById(statusId).className = 'success';
+                    document.getElementById(statusId).innerText = `✅ Success: ${file.name}`;
+                } else {
+                    document.getElementById(statusId).className = 'error';
+                    document.getElementById(statusId).innerText = `❌ Error: ${file.name} - ${result.message}`;
+                }
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById(statusId).className = 'error';
+                document.getElementById(statusId).innerText = `❌ Failed: ${file.name}`;
+            }
+        }
+
+        uploadBtn.disabled = false;
+        fileInput.value = ''; // Reset input
+    }
+
+    // Helper function to convert a file to a Base64 encoded string
+    function getBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    }
+</script>
+
+</body>
+</html>
