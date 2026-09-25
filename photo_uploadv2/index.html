@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drive Photo Uploader</title>
+    <style>
+        :root {
+            --primary: #4285F4;
+            --primary-hover: #3367d6;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border-color: #e0e0e0;
+            --success: #34A853;
+            --error: #EA4335;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            color: var(--text-main);
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h2 {
+            margin-top: 0;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Drag & Drop Zone */
+        .drop-zone {
+            border: 2px dashed var(--primary);
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            background-color: #f8faff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        .drop-zone.dragover {
+            background-color: #e8f0fe;
+            border-color: var(--primary-hover);
+        }
+        .drop-zone p {
+            margin: 0;
+            color: var(--primary);
+            font-weight: 500;
+        }
+        .drop-zone span {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        /* Summary Info */
+        .summary-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        /* Preview Grid */
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .preview-card {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .preview-details {
+            padding: 8px;
+            font-size: 11px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-name { font-weight: 600; display: block; overflow: hidden; text-overflow: ellipsis; }
+        .file-size { color: var(--text-muted); }
+
+        /* Status Overlay */
+        .status-overlay {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .status-overlay.active { opacity: 1; }
+
+        /* Progress Bar */
+        .progress-container {
+            display: none;
+            margin-bottom: 20px;
+        }
+        .progress-bar-bg {
+            background-color: var(--border-color);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            width: 100%;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        .progress-text {
+            font-size: 13px;
+            text-align: center;
+            margin-top: 8px;
+            color: var(--text-muted);
+        }
+
+        /* Button */
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        button:hover { background-color: var(--primary-hover); }
+        button:disabled { background-color: #a0c1ff; cursor: not-allowed; }
+
+        /* Spinner Animation */
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid var(--primary);
+            border-radius: 50%;
+            width: 14px;
+            height: 14px;
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Upload to Drive</h2>
+    
+    <!-- Drag and Drop Zone -->
+    <div class="drop-zone" id="dropZone">
+        <p>Drag & drop photos here</p>
+        <span>or click to browse files</span>
+        <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
+    </div>
+
+    <!-- Summary (Hidden until files selected) -->
+    <div class="summary-info" id="summaryInfo" style="display: none;">
+        <span id="fileCountTxt">0 files selected</span>
+        <span id="totalSizeTxt">0 MB</span>
+    </div>
+
+    <!-- Image Previews -->
+    <div class="preview-grid" id="previewGrid"></div>
+
+    <!-- Overall Progress Bar -->
+    <div class="progress-container" id="progressContainer">
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text" id="progressText">Uploading: 0 / 0</div>
+    </div>
+
+    <!-- Upload Button -->
+    <button id="uploadBtn" disabled onclick="uploadFiles()">Upload Photos</button>
+</div>
+
+<script>
+    // ⚠️ PASTE YOUR APPS SCRIPT URL HERE
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzN3XWg1iRjBvLXG4w6LS_gXWnGzET4K7wEzwDUBvXrcpizo1QcPqjJs0_SwrEHmz1_4g/exec";
+    
+    let selectedFiles = [];
+
+    // --- UI Elements ---
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const previewGrid = document.getElementById('previewGrid');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const summaryInfo = document.getElementById('summaryInfo');
+    const fileCountTxt = document.getElementById('fileCountTxt');
+    const totalSizeTxt = document.getElementById('totalSizeTxt');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+
+    // --- Drag and Drop Listeners ---
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        if (e.dataTransfer.files.length) {
+            handleFiles(e.dataTransfer.files);
+        }
+    });
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length) {
+            handleFiles(e.target.files);
+        }
+    });
+
+    // --- Handle File Selection ---
+    function handleFiles(files) {
+        selectedFiles = Array.from(files);
+        previewGrid.innerHTML = ''; // Clear previous previews
+        
+        let totalSize = 0;
+
+        selectedFiles.forEach((file, index) => {
+            totalSize += file.size;
+
+            // Create Preview Card
+            const card = document.createElement('div');
+            card.className = 'preview-card';
+            card.id = `card-${index}`;
+
+            // ObjectURL is much faster than Base64 for instant frontend previews
+            const imgUrl = URL.createObjectURL(file);
+            
+            card.innerHTML = `
+                <img src="${imgUrl}" class="preview-img" alt="${file.name}">
+                <div class="status-overlay" id="status-${index}"></div>
+                <div class="preview-details">
+                    <span class="file-name" title="${file.name}">${file.name}</span>
+                    <span class="file-size">${formatBytes(file.size)}</span>
+                </div>
+            `;
+            previewGrid.appendChild(card);
+        });
+
+        // Update Summary Details
+        fileCountTxt.innerText = `${selectedFiles.length} file${selectedFiles.length > 1 ? 's' : ''} selected`;
+        totalSizeTxt.innerText = formatBytes(totalSize);
+        summaryInfo.style.display = 'flex';
+        uploadBtn.disabled = false;
+        
+        // Reset Progress UI if selecting new files
+        progressContainer.style.display = 'none';
+        progressFill.style.width = '0%';
+    }
+
+    // --- Upload Logic ---
+    async function uploadFiles() {
+        if (selectedFiles.length === 0) return;
+
+        // Lock UI during upload
+        uploadBtn.disabled = true;
+        dropZone.style.pointerEvents = 'none';
+        dropZone.style.opacity = '0.6';
+        
+        progressContainer.style.display = 'block';
+        let successCount = 0;
+
+        for (let i = 0; i < selectedFiles.length; i++) {
+            const file = selectedFiles[i];
+            const statusIcon = document.getElementById(`status-${i}`);
+            
+            // Update UI to show current file is uploading
+            progressText.innerText = `Uploading file ${i + 1} of ${selectedFiles.length}...`;
+            statusIcon.classList.add('active');
+            statusIcon.innerHTML = `<div class="spinner"></div>`; // Spinner icon
+
+            try {
+                // 1. Convert to Base64
+                const base64Data = await getBase64(file);
+                const base64String = base64Data.split(',')[1];
+
+                // 2. Send POST request
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    redirect: 'follow',
+                    body: JSON.stringify({
+                        fileName: file.name,
+                        mimeType: file.type,
+                        fileData: base64String
+                    })
+                });
+
+                const result = await response.json();
+
+                // 3. Update File Status Icon
+                if (result.status === 'success') {
+                    statusIcon.innerHTML = `✅`;
+                    successCount++;
+                } else {
+                    statusIcon.innerHTML = `❌`;
+                    console.error("Error from Apps Script:", result.message);
+                }
+
+            } catch (error) {
+                statusIcon.innerHTML = `❌`;
+                console.error("Upload failed for", file.name, error);
+            }
+
+            // 4. Update Overall Progress Bar
+            const percentComplete = ((i + 1) / selectedFiles.length) * 100;
+            progressFill.style.width = `${percentComplete}%`;
+        }
+
+        // Upload complete state
+        progressText.innerText = `Upload Complete! ${successCount} of ${selectedFiles.length} successful.`;
+        uploadBtn.innerText = "Upload More";
+        uploadBtn.disabled = false;
+        dropZone.style.pointerEvents = 'auto';
+        dropZone.style.opacity = '1';
+        selectedFiles = []; // Clear queue so they can add more
+    }
+
+    // --- Helper Functions ---
+    function formatBytes(bytes, decimals = 2) {
+        if (!+bytes) return '0 Bytes';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+    }
+
+    function getBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    }
+</script>
+
+</body>
+</html>
