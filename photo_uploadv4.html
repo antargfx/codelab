@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upload Photos</title>
+
+<style>
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --primary: #111111;
+    --primary-hover: #333333;
+    --background: #f5f5f5;
+    --card: #ffffff;
+    --border: #dddddd;
+    --text: #111111;
+    --muted: #777777;
+    --success: #16803c;
+    --danger: #d93025;
+    --radius: 18px;
+}
+
+body {
+    min-height: 100vh;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--background);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    padding: 30px 15px;
+}
+
+/* =========================================================
+   MAIN CONTAINER
+========================================================= */
+
+.container {
+    width: 100%;
+    max-width: 900px;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.header h1 {
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+}
+
+.header p {
+    color: var(--muted);
+    font-size: 15px;
+}
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 25px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.06);
+}
+
+/* =========================================================
+   DROP ZONE
+========================================================= */
+
+.drop-zone {
+    border: 2px dashed #bdbdbd;
+    border-radius: 16px;
+    padding: 45px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.drop-zone:hover {
+    border-color: #555;
+    background: #fafafa;
+}
+
+.drop-zone.dragover {
+    border-color: #111;
+    background: #f0f0f0;
+    transform: scale(1.01);
+}
+
+.upload-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 15px;
+    border-radius: 50%;
+    background: #111;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 27px;
+}
+
+.drop-zone h2 {
+    font-size: 20px;
+    margin-bottom: 7px;
+}
+
+.drop-zone p {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 18px;
+}
+
+.select-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #111;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.select-button:hover {
+    background: var(--primary-hover);
+}
+
+#fileInput {
+    display: none;
+}
+
+/* =========================================================
+   FILE INFO
+========================================================= */
+
+.file-info {
+    display: none;
+    margin-top: 25px;
+}
+
+.file-info.active {
+    display: block;
+}
+
+.file-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.file-header h3 {
+    font-size: 17px;
+}
+
+.file-count {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* =========================================================
+   PHOTO GRID
+========================================================= */
+
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 12px;
+}
+
+.photo-item {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #eee;
+    border: 1px solid #ddd;
+}
+
+.photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* =========================================================
+   REMOVE BUTTON & STATUS OVERLAY
+========================================================= */
+
+.remove-button {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.remove-button:hover {
+    background: #000;
+}
+
+.status-overlay {
+    position: absolute;
+    top: 7px;
+    left: 7px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 2;
+}
+
+.status-overlay.active {
+    opacity: 1;
+}
+
+/* =========================================================
+   FILE NAME
+========================================================= */
+
+.photo-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 25px 8px 8px;
+    color: white;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+}
+
+/* =========================================================
+   UPLOAD SUMMARY
+========================================================= */
+
+.summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding: 14px 16px;
+    background: #f7f7f7;
+    border-radius: 12px;
+    font-size: 14px;
+}
+
+.summary strong {
+    font-weight: 700;
+}
+
+/* =========================================================
+   UPLOAD BUTTON
+========================================================= */
+
+.upload-button {
+    width: 100%;
+    margin-top: 18px;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: #111;
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.upload-button:hover {
+    background: #333;
+}
+
+.upload-button:active {
+    transform: scale(0.99);
+}
+
+.upload-button:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+}
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+.progress-container {
+    display: none;
+    margin-top: 20px;
+}
+
+.progress-container.active {
+    display: block;
+}
+
+.progress-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.progress-bar {
+    height: 9px;
+    background: #e5e5e5;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    background: #111;
+    border-radius: inherit;
+    transition: width 0.4s ease;
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status {
+    display: none;
+    margin-top: 18px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.status.show {
+    display: block;
+}
+
+.status.success {
+    background: #e9f7ef;
+    color: var(--success);
+}
+
+.status.error {
+    background: #fdecea;
+    color: var(--danger);
+}
+
+.status.info {
+    background: #f0f0f0;
+    color: #444;
+}
+
+/* =========================================================
+   LOADING SPINNER
+========================================================= */
+
+.spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ccc;
+    border-top-color: #111;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.footer {
+    text-align: center;
+    margin-top: 20px;
+    color: #999;
+    font-size: 12px;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+    body { padding: 15px 10px; }
+    .card { padding: 15px; }
+    .drop-zone { padding: 35px 15px; }
+    .photo-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .remove-button { width: 26px; height: 26px; font-size: 14px; }
+    .status-overlay { width: 26px; height: 26px; font-size: 14px; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Upload Photos</h1>
+        <p>Select multiple photos and upload them in original quality.</p>
+    </div>
+
+    <div class="card">
+        <!-- DROP ZONE -->
+        <div class="drop-zone" id="dropZone">
+            <div class="upload-icon">↑</div>
+            <h2>Drop your photos here</h2>
+            <p>or select photos from your device</p>
+            <label for="fileInput" class="select-button">Select Photos</label>
+            <input type="file" id="fileInput" multiple accept="image/*">
+        </div>
+
+        <!-- SELECTED FILES -->
+        <div class="file-info" id="fileInfo">
+            <div class="file-header">
+                <h3>Selected Photos</h3>
+                <span class="file-count" id="fileCount">0 files</span>
+            </div>
+
+            <div class="photo-grid" id="photoGrid"></div>
+
+            <div class="summary">
+                <span>Total files</span>
+                <strong id="totalFiles">0</strong>
+            </div>
+
+            <div class="summary">
+                <span>Total size</span>
+                <strong id="totalSize">0 MB</strong>
+            </div>
+
+            <button class="upload-button" id="uploadButton">Upload Photos</button>
+
+            <!-- PROGRESS -->
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-top">
+                    <span id="progressText">Preparing upload...</span>
+                    <strong id="progressPercent">0%</strong>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <!-- STATUS -->
+            <div class="status" id="status"></div>
+        </div>
+    </div>
+
+    <div class="footer">Files are uploaded in their original quality.</div>
+</div>
+
+<script>
+/* =========================================================
+   GOOGLE APPS SCRIPT URL
+========================================================= */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzN3XWg1iRjBvLXG4w6LS_gXWnGzET4K7wEzwDUBvXrcpizo1QcPqjJs0_SwrEHmz1_4g/exec";
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+const fileInput = document.getElementById("fileInput");
+const dropZone = document.getElementById("dropZone");
+const photoGrid = document.getElementById("photoGrid");
+const fileInfo = document.getElementById("fileInfo");
+const fileCount = document.getElementById("fileCount");
+const totalFiles = document.getElementById("totalFiles");
+const totalSize = document.getElementById("totalSize");
+const uploadButton = document.getElementById("uploadButton");
+const progressContainer = document.getElementById("progressContainer");
+const progressFill = document.getElementById("progressFill");
+const progressText = document.getElementById("progressText");
+const progressPercent = document.getElementById("progressPercent");
+const statusBox = document.getElementById("status");
+
+/* =========================================================
+   SELECTED FILES STATE
+========================================================= */
+let selectedFiles = [];
+
+/* =========================================================
+   EVENT LISTENERS
+========================================================= */
+fileInput.addEventListener("change", function () {
+    addFiles(Array.from(this.files));
+    this.value = "";
+});
+
+dropZone.addEventListener("dragover", function (event) {
+    event.preventDefault();
+    dropZone.classList.add("dragover");
+});
+
+dropZone.addEventListener("dragleave", function () {
+    dropZone.classList.remove("dragover");
+});
+
+dropZone.addEventListener("drop", function (event) {
+    event.preventDefault();
+    dropZone.classList.remove("dragover");
+    addFiles(Array.from(event.dataTransfer.files));
+});
+
+uploadButton.addEventListener("click", uploadFiles);
+
+/* =========================================================
+   ADD FILES
+========================================================= */
+function addFiles(files) {
+    const imageFiles = files.filter(file => file.type.startsWith("image/"));
+    
+    if (imageFiles.length === 0) {
+        showStatus("Please select image files.", "error");
+        return;
+    }
+
+    imageFiles.forEach(file => {
+        const duplicate = selectedFiles.some(existing =>
+            existing.name === file.name &&
+            existing.size === file.size &&
+            existing.lastModified === file.lastModified
+        );
+        if (!duplicate) {
+            selectedFiles.push(file);
+        }
+    });
+
+    renderFiles();
+}
+
+/* =========================================================
+   RENDER FILES
+========================================================= */
+function renderFiles() {
+    photoGrid.innerHTML = "";
+
+    selectedFiles.forEach((file, index) => {
+        const item = document.createElement("div");
+        item.className = "photo-item";
+
+        const img = document.createElement("img");
+        const objectURL = URL.createObjectURL(file);
+        img.src = objectURL;
+
+        // Individual Status Icon Overlay
+        const statusOverlay = document.createElement("div");
+        statusOverlay.className = "status-overlay";
+        statusOverlay.id = `status-${index}`;
+
+        const removeButton = document.createElement("button");
+        removeButton.className = "remove-button";
+        removeButton.innerHTML = "×";
+        removeButton.title = "Remove";
+
+        removeButton.addEventListener("click", function () {
+            URL.revokeObjectURL(objectURL);
+            selectedFiles.splice(index, 1);
+            renderFiles();
+        });
+
+        const name = document.createElement("div");
+        name.className = "photo-name";
+        name.textContent = file.name;
+
+        item.appendChild(img);
+        item.appendChild(statusOverlay);
+        item.appendChild(removeButton);
+        item.appendChild(name);
+        
+        photoGrid.appendChild(item);
+    });
+
+    updateSummary();
+}
+
+/* =========================================================
+   SUMMARY & FORMATTING
+========================================================= */
+function updateSummary() {
+    const count = selectedFiles.length;
+    const bytes = selectedFiles.reduce((total, file) => total + file.size, 0);
+
+    fileCount.textContent = `${count} ${count === 1 ? "file" : "files"}`;
+    totalFiles.textContent = count;
+    totalSize.textContent = formatBytes(bytes);
+
+    fileInfo.classList.toggle("active", count > 0);
+    uploadButton.disabled = count === 0;
+}
+
+function formatBytes(bytes) {
+    if (bytes === 0) return "0 MB";
+    const units = ["Bytes", "KB", "MB", "GB"];
+    const index = Math.floor(Math.log(bytes) / Math.log(1024));
+    const value = bytes / Math.pow(1024, index);
+    return `${value.toFixed(2)} ${units[index]}`;
+}
+
+/* =========================================================
+   CONCURRENT UPLOAD LOGIC (FASTER PROCESSING)
+========================================================= */
+const CONCURRENCY_LIMIT = 3; // Upload 3 files simultaneously
+
+async function uploadFiles() {
+    if (selectedFiles.length === 0) return;
+
+    uploadButton.disabled = true;
+    dropZone.style.pointerEvents = 'none';
+    progressContainer.classList.add("active");
+    statusBox.classList.remove("show");
+
+    let uploaded = 0;
+    let failed = 0;
+    const total = selectedFiles.length;
+
+    // Helper to upload a single file
+    async function uploadSingleFile(index) {
+        const file = selectedFiles[index];
+        const statusIcon = document.getElementById(`status-${index}`);
+
+        // Hide remove button & activate spinner
+        const removeBtn = statusIcon.nextElementSibling;
+        if (removeBtn && removeBtn.classList.contains("remove-button")) {
+            removeBtn.style.display = 'none';
+        }
+
+        statusIcon.classList.add("active");
+        statusIcon.innerHTML = `<div class="spinner"></div>`;
+
+        try {
+            // 1. Convert to Base64
+            const base64 = await fileToBase64(file);
+
+            // 2. Send POST request
+            const payload = {
+                fileName: file.name,
+                mimeType: file.type,
+                fileData: base64,
+                folderId: "1lA62w9U1jQRTkXZI9M4xmOJxXC36Ekq0"
+            };
+
+            const response = await fetch(SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                redirect: "follow",
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (result.status !== 'success') {
+                throw new Error(result.message || "Upload failed.");
+            }
+
+            statusIcon.innerHTML = `✅`;
+            uploaded++;
+        } catch (error) {
+            console.error(`Failed uploading ${file.name}:`, error);
+            statusIcon.innerHTML = `❌`;
+            failed++;
+        } finally {
+            // Update progress after each individual file completes
+            const completed = uploaded + failed;
+            const percent = Math.round((completed / total) * 100);
+            progressFill.style.width = `${percent}%`;
+            progressPercent.textContent = `${percent}%`;
+            progressText.textContent = `Uploaded ${completed} of ${total} files...`;
+        }
+    }
+
+    // Worker pool to execute uploads with concurrency limit
+    const queue = selectedFiles.map((_, index) => index);
+    
+    async function worker() {
+        while (queue.length > 0) {
+            const index = queue.shift();
+            await uploadSingleFile(index);
+        }
+    }
+
+    // Launch worker threads
+    const workers = [];
+    const activeWorkers = Math.min(CONCURRENCY_LIMIT, total);
+    for (let i = 0; i < activeWorkers; i++) {
+        workers.push(worker());
+    }
+
+    await Promise.all(workers);
+
+    // Completion handling
+    dropZone.style.pointerEvents = 'auto';
+
+    if (failed === 0) {
+        progressText.textContent = "Upload complete!";
+        showStatus(`Successfully uploaded all ${uploaded} photos!`, "success");
+        setTimeout(() => {
+            selectedFiles = [];
+            renderFiles();
+            progressContainer.classList.remove("active");
+            statusBox.classList.remove("show");
+        }, 3000);
+    } else {
+        progressText.textContent = `Completed with errors`;
+        showStatus(`Finished: ${uploaded} uploaded, ${failed} failed.`, "info");
+        uploadButton.disabled = false;
+        uploadButton.textContent = "Retry";
+    }
+}
+
+/* =========================================================
+   FILE → BASE64
+========================================================= */
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function () {
+            const result = reader.result;
+            const base64 = result.split(",")[1];
+            resolve(base64);
+        };
+        reader.onerror = function () {
+            reject(new Error("Could not read file."));
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+/* =========================================================
+   STATUS MESSAGE
+========================================================= */
+function showStatus(message, type) {
+    statusBox.textContent = message;
+    statusBox.className = "status show " + type;
+}
+</script>
+
+</body>
+</html>
