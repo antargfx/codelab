@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Program Photos — Share Your Photographs</title>
+<meta name="description" content="Upload your program and event photographs — they go straight to the shared album.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📷</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="page">
+
+  <header class="site-header">
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 48 48" width="28" height="28">
+        <rect x="4" y="14" width="40" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="2.5"/>
+        <circle cx="24" cy="28" r="8" fill="none" stroke="currentColor" stroke-width="2.5"/>
+        <rect x="17" y="8" width="14" height="6" rx="2" fill="currentColor"/>
+      </svg>
+    </div>
+    <div>
+      <h1 id="event-title">Program Photos</h1>
+      <p class="subtitle" id="event-subtitle">Share the photographs you took — they'll go straight into the shared album.</p>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- PIN gate (hidden automatically by app.js if no PIN is required) -->
+    <section class="pin-panel" id="pinPanel" hidden>
+      <label for="pinInput">Access code</label>
+      <div class="pin-row">
+        <input type="text" id="pinInput" inputmode="numeric" autocomplete="off" placeholder="Enter the code you were given" aria-describedby="pinHelp">
+        <button type="button" id="pinSubmit" class="btn btn-secondary">Continue</button>
+      </div>
+      <p class="pin-help" id="pinHelp">Ask the organizer if you don't have one.</p>
+    </section>
+
+    <section class="uploader" id="uploaderSection">
+
+      <!-- Drop zone / picker -->
+      <label class="dropzone" id="dropzone" for="fileInput" tabindex="0" role="button"
+             aria-label="Select photographs to upload">
+        <input type="file" id="fileInput" accept="image/*" multiple hidden>
+        <div class="dropzone-icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64" width="40" height="40">
+            <path d="M32 8 L32 40 M20 20 L32 8 L44 20" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 40 L12 50 A4 4 0 0 0 16 54 L48 54 A4 4 0 0 0 52 50 L52 40" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="dropzone-title">Select photographs</span>
+        <span class="dropzone-hint">Tap to choose from your gallery, or drag photos here from your computer</span>
+      </label>
+
+      <!-- Selection summary + actions -->
+      <div class="selection-bar" id="selectionBar" hidden>
+        <span id="selectionCount">0 photos selected</span>
+        <button type="button" id="clearAllBtn" class="btn-text">Remove all</button>
+      </div>
+
+      <!-- Preview grid -->
+      <ul class="preview-grid" id="previewGrid" hidden aria-label="Selected photographs"></ul>
+
+      <!-- Upload action -->
+      <div class="upload-action" id="uploadAction" hidden>
+        <button type="button" id="uploadBtn" class="btn btn-primary">Upload photos</button>
+      </div>
+
+      <!-- Progress -->
+      <section class="progress-panel" id="progressPanel" hidden aria-live="polite">
+        <div class="progress-header">
+          <span id="progressLabel">Uploading photos…</span>
+          <span id="progressCount">0 / 0</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill" style="width:0%"></div>
+        </div>
+        <ul class="file-status-list" id="fileStatusList"></ul>
+      </section>
+
+      <!-- Result -->
+      <section class="result-panel" id="resultPanel" hidden aria-live="polite">
+        <div class="result-icon" id="resultIcon" aria-hidden="true">✓</div>
+        <h2 id="resultTitle">Upload complete</h2>
+        <p id="resultMessage"></p>
+        <div class="result-actions">
+          <button type="button" id="retryBtn" class="btn btn-secondary" hidden>Retry failed uploads</button>
+          <button type="button" id="uploadMoreBtn" class="btn btn-text">Upload more photos</button>
+        </div>
+      </section>
+
+    </section>
+
+    <p class="status-region" id="srStatus" role="status" aria-live="polite" style="position:absolute;left:-9999px;"></p>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>Photos are saved to a private, shared album. Thank you for contributing yours.</p>
+  </footer>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
