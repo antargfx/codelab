@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Local-only image and video metadata cleaner. Files are processed in your browser.">
+  <title>Cleanroom — Local Metadata Cleaner</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Cleanroom home"><span class="brand-mark">C</span><span>cleanroom<span class="brand-dot">.</span></span></a>
+      <span class="privacy-pill"><span class="pulse"></span> LOCAL PROCESSING</span>
+    </header>
+
+    <section class="hero">
+      <p class="eyebrow">PRIVATE BY DESIGN · NO UPLOADS</p>
+      <h1>Your files.<br><span>Your device.</span></h1>
+      <p class="hero-copy">Rebuild supported images and clean supported video containers in your browser. Originals stay untouched; cleaned copies are created locally.</p>
+    </section>
+
+    <section class="notice" role="note">
+      <span class="notice-icon">i</span>
+      <div><strong>Honest-cleaning guarantee</strong><p>This tool reports what it attempted, not a guarantee that every provenance signal is gone. Strict mode may re-encode media and affect quality, compatibility, or file size. Do not use it to misrepresent a file's origin or authorship.</p></div>
+    </section>
+
+    <section class="workspace">
+      <div class="section-head">
+        <div><p class="eyebrow">01 / SELECT FILES</p><h2>Bring your media</h2></div>
+        <span class="format-note">JPG · PNG · WEBP · MP4 · MOV · MKV</span>
+      </div>
+
+      <label class="dropzone" id="dropzone" for="fileInput" tabindex="0">
+        <input id="fileInput" type="file" multiple accept=".jpg,.jpeg,.png,.webp,.mp4,.mov,.mkv,image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/x-matroska">
+        <span class="upload-icon" aria-hidden="true">↑</span>
+        <strong>Drop files here or <span>browse files</span></strong>
+        <small>Batch processing supported · files are not sent to a server</small>
+      </label>
+
+      <div class="toolbar">
+        <div class="selected-count" id="selectedCount">No files selected</div>
+        <div class="toolbar-actions">
+          <button class="button button-quiet" id="clearBtn" type="button" disabled>Clear list</button>
+          <button class="button button-primary" id="cleanBtn" type="button" disabled><span>Clean selected files</span><span aria-hidden="true">↗</span></button>
+        </div>
+      </div>
+
+      <div class="file-list" id="fileList" aria-live="polite">
+        <div class="empty-state"><span>▧</span><p>Your selected files will appear here.</p></div>
+      </div>
+
+      <div class="progress-wrap" id="progressWrap" hidden>
+        <div class="progress-label"><span id="progressText">Preparing…</span><span id="progressPercent">0%</span></div>
+        <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+      </div>
+    </section>
+
+    <section class="report-section" id="reportSection" hidden>
+      <div class="section-head">
+        <div><p class="eyebrow">02 / RESULTS</p><h2>Cleaning report</h2></div>
+        <button class="button button-primary" id="downloadZipBtn" type="button" disabled>Download all as ZIP ↓</button>
+      </div>
+      <div id="reportList" class="report-list"></div>
+    </section>
+
+    <section class="how-section">
+      <p class="eyebrow">WHAT HAPPENS LOCALLY</p>
+      <div class="how-grid">
+        <article><span class="step-no">01</span><h3>Images are rebuilt</h3><p>Supported images are decoded and re-encoded through the browser canvas. This typically removes embedded metadata, but can change image quality, transparency, color profiles, animation, or other format features.</p></article>
+        <article><span class="step-no">02</span><h3>Videos are re-encoded</h3><p>FFmpeg.wasm attempts to decode and re-encode video/audio and drops ordinary container metadata. This is resource-intensive and can fail for unsupported codecs or large files.</p></article>
+        <article><span class="step-no">03</span><h3>Results are verified honestly</h3><p>The report distinguishes successful processing from unsupported files and errors. This page does not independently certify that EXIF, XMP, IPTC, C2PA, or every other trace is absent.</p></article>
+      </div>
+    </section>
+
+    <footer>
+      <span>cleanroom<span class="brand-dot">.</span></span>
+      <span>Browser-side utility · No backend</span>
+      <a href="https://github.com/ffmpegwasm/ffmpeg.wasm" target="_blank" rel="noopener noreferrer">FFmpeg.wasm ↗</a>
+    </footer>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
